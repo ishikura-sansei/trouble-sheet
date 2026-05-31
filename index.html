@@ -644,29 +644,33 @@ async function gasPost(payload) {
   if (!GAS_URL) return null;
   showSync(true);
   try {
-    const res = await fetch(GAS_URL, {
+    // no-cors で CORS 制限を回避（GAS 側は実行される、レスポンスは読めない）
+    await fetch(GAS_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
       body: JSON.stringify(payload),
     });
-    const data = await res.json();
-    showSync(false);
-    return data;
-  } catch(e) { showSync(false); return null; }
-}
-async function gasGet() {
-  if (!GAS_URL) return;
-  showSync(true);
-  try {
-    const res = await fetch(GAS_URL + "?action=list");
-    const data = await res.json();
-    if (data && data.items) {
-      items = data.items;
-      save();
-      render();
-    }
   } catch(e) {}
   showSync(false);
+}
+function gasGet() {
+  if (!GAS_URL) return Promise.resolve();
+  showSync(true);
+  return new Promise((resolve) => {
+    const cbName = "_gascb_" + Date.now();
+    const script  = document.createElement("script");
+    const cleanup = () => { try { document.head.removeChild(script); } catch(e){} delete window[cbName]; showSync(false); };
+    window[cbName] = function(data) {
+      cleanup();
+      if (data && data.items) { items = data.items; save(); render(); }
+      resolve();
+    };
+    script.onerror = () => { cleanup(); resolve(); };
+    script.src = GAS_URL + "?action=list&callback=" + cbName;
+    document.head.appendChild(script);
+    setTimeout(() => { cleanup(); resolve(); }, 10000);
+  });
 }
 
 /* ============================================================
