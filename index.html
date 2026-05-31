@@ -465,19 +465,24 @@
     <span class="dot" style="background:var(--clr-done)"></span>
     <span>解決済</span>
   </button>
-  <button class="filter-chip" data-filter="ATEL"    onclick="setFilter('ATEL')">ATEL</button>
-  <button class="filter-chip" data-filter="リケン"   onclick="setFilter('リケン')">リケン</button>
-  <button class="filter-chip" data-filter="キョウエイ" onclick="setFilter('キョウエイ')">キョウエイ</button>
-  <button class="filter-chip" data-filter="ライズ"   onclick="setFilter('ライズ')">ライズ</button>
+  <button class="filter-chip" data-filter="株式会社ATEL" onclick="setFilter('株式会社ATEL')">ATEL</button>
+  <button class="filter-chip" data-filter="リケンエナジー有限会社" onclick="setFilter('リケンエナジー有限会社')">リケン</button>
+  <button class="filter-chip" data-filter="株式会社キョウエイ" onclick="setFilter('株式会社キョウエイ')">キョウエイ</button>
+  <button class="filter-chip" data-filter="ライズ" onclick="setFilter('ライズ')">ライズ</button>
+  <button class="filter-chip" data-filter="外注先" onclick="setFilter('外注先')">外注先</button>
+  <button class="filter-chip" data-filter="外注職人" onclick="setFilter('外注職人')">外注職人</button>
+  <button class="filter-chip" data-filter="株式会社individual" onclick="setFilter('株式会社individual')">individual</button>
+  <button class="filter-chip" data-filter="株式会社Alpha Electro" onclick="setFilter('株式会社Alpha Electro')">Alpha Electro</button>
 </div>
 
 <!-- GROUP TABS -->
 <div class="group-tabs" id="groupTabs">
-  <button class="group-tab active" data-group="status"  onclick="setGroup('status')">状態別</button>
-  <button class="group-tab"        data-group="assignee" onclick="setGroup('assignee')">担当者別</button>
-  <button class="group-tab"        data-group="client"   onclick="setGroup('client')">元請別</button>
-  <button class="group-tab"        data-group="type"     onclick="setGroup('type')">種類別</button>
-  <button class="group-tab"        data-group="none"     onclick="setGroup('none')">一覧</button>
+  <button class="group-tab active" data-group="status"      onclick="setGroup('status')">状態別</button>
+  <button class="group-tab"        data-group="salesPerson" onclick="setGroup('salesPerson')">営業担当者別</button>
+  <button class="group-tab"        data-group="assignee"    onclick="setGroup('assignee')">担当者別</button>
+  <button class="group-tab"        data-group="client"      onclick="setGroup('client')">元請別</button>
+  <button class="group-tab"        data-group="type"        onclick="setGroup('type')">種類別</button>
+  <button class="group-tab"        data-group="none"        onclick="setGroup('none')">一覧</button>
 </div>
 
 <!-- MAIN LIST -->
@@ -524,10 +529,14 @@
     <div class="form-row">
       <label class="form-label">元請（取引先）</label>
       <select class="form-select" id="fClient">
-        <option value="ATEL">ATEL</option>
-        <option value="リケン">リケン</option>
-        <option value="キョウエイ">キョウエイ</option>
+        <option value="株式会社ATEL">株式会社ATEL</option>
+        <option value="リケンエナジー有限会社">リケンエナジー有限会社</option>
+        <option value="株式会社キョウエイ">株式会社キョウエイ</option>
         <option value="ライズ">ライズ</option>
+        <option value="外注先">外注先</option>
+        <option value="外注職人">外注職人</option>
+        <option value="株式会社individual">株式会社individual</option>
+        <option value="株式会社Alpha Electro">株式会社Alpha Electro</option>
         <option value="その他">その他</option>
       </select>
     </div>
@@ -560,22 +569,17 @@
     </div>
     <div class="form-row-2col">
       <div class="form-row">
-        <label class="form-label">報告者</label>
-        <select class="form-select" id="fReporter">
-          <option value="石倉">石倉</option>
-          <option value="山中">山中</option>
-          <option value="今井">今井</option>
-        </select>
+        <label class="form-label">営業担当者</label>
+        <input type="text" class="form-input" id="fSalesPerson" placeholder="担当者名">
       </div>
       <div class="form-row">
-        <label class="form-label">担当者（依頼先）</label>
-        <select class="form-select" id="fAssignee">
-          <option value="">（なし）</option>
-          <option value="石倉">石倉</option>
-          <option value="山中">山中</option>
-          <option value="今井">今井</option>
-        </select>
+        <label class="form-label">報告者</label>
+        <input type="text" class="form-input" id="fReporter" placeholder="報告者名">
       </div>
+    </div>
+    <div class="form-row">
+      <label class="form-label">担当者（依頼先）</label>
+      <input type="text" class="form-input" id="fAssignee" placeholder="担当者名（任意）">
     </div>
     <button class="form-submit" onclick="submitAdd()">登録する</button>
   </div>
@@ -691,24 +695,28 @@ function groupItems(list) {
   const groups = {};
   const ORDER = {
     status:   ["open", "progress", "done"],
-    assignee: ["石倉", "山中", "今井", ""],
-    client:   ["ATEL", "リケン", "キョウエイ", "ライズ", "その他"],
+    assignee:    [],
+    salesPerson: [],
+    client:   ["株式会社ATEL", "リケンエナジー有限会社", "株式会社キョウエイ", "ライズ", "外注先", "外注職人", "株式会社individual", "株式会社Alpha Electro", "その他"],
     type:     ["工事トラブル","機材・材料","安全・事故","クレーム",
                "引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
   };
   list.forEach(item => {
     let key = "";
-    if      (activeGroup === "status")   key = item.status;
-    else if (activeGroup === "assignee") key = item.assignee || "";
-    else if (activeGroup === "client")   key = item.client;
-    else if (activeGroup === "type")     key = item.type;
+    if      (activeGroup === "status")      key = item.status;
+    else if (activeGroup === "assignee")    key = item.assignee || "";
+    else if (activeGroup === "salesPerson") key = item.salesPerson || "";
+    else if (activeGroup === "client")      key = item.client;
+    else if (activeGroup === "type")        key = item.type;
     if (!groups[key]) groups[key] = [];
     groups[key].push(item);
   });
   const order = ORDER[activeGroup] || [];
   const sorted = [...order.filter(k => groups[k]), ...Object.keys(groups).filter(k => !order.includes(k))];
   return sorted.map(key => ({
-    label: activeGroup === "status" ? (STATUS[key]?.label || key) : (key || "担当者なし"),
+    label: activeGroup === "status" ? (STATUS[key]?.label || key)
+         : activeGroup === "salesPerson" ? (key || "営業担当者なし")
+         : (key || "担当者なし"),
     items: groups[key],
   }));
 }
@@ -719,8 +727,8 @@ function cardHTML(item) {
     `<span class="tag ${st.tagClass}">${st.label}</span>`,
     `<span class="tag tag-client">${item.client}</span>`,
     `<span class="tag tag-type">${item.type}</span>`,
-    item.assignee ? `<span class="tag tag-person">${item.assignee}</span>` : "",
-    item.reporter  ? `<span class="tag tag-person">${item.reporter}</span>` : "",
+    item.salesPerson ? `<span class="tag tag-person">${item.salesPerson}</span>` : "",
+    item.assignee    ? `<span class="tag tag-person">${item.assignee}</span>` : "",
   ].filter(Boolean).join("");
 
   return `
@@ -781,6 +789,9 @@ function openAdd() {
   document.getElementById("fStatus").value = "open";
   document.getElementById("fSite").value = "";
   document.getElementById("fDetail").value = "";
+  document.getElementById("fSalesPerson").value = "";
+  document.getElementById("fReporter").value = "";
+  document.getElementById("fAssignee").value = "";
   showSheet("addSheet");
 }
 async function submitAdd() {
@@ -792,8 +803,9 @@ async function submitAdd() {
     site:     document.getElementById("fSite").value.trim(),
     type:     document.getElementById("fType").value,
     detail:   document.getElementById("fDetail").value.trim(),
-    reporter: document.getElementById("fReporter").value,
-    assignee: document.getElementById("fAssignee").value,
+    salesPerson: document.getElementById("fSalesPerson").value.trim(),
+    reporter:    document.getElementById("fReporter").value.trim(),
+    assignee:    document.getElementById("fAssignee").value.trim(),
     createdAt: new Date().toISOString(),
   };
   if (!item.site) { alert("現場名・案件名を入力してください"); return; }
@@ -835,8 +847,12 @@ function openDetail(id) {
       <div class="detail-value">${item.date || "—"}</div>
     </div>
     <div class="detail-section">
+      <div class="detail-key">営業担当者</div>
+      <div class="detail-value">${esc(item.salesPerson || "—")}</div>
+    </div>
+    <div class="detail-section">
       <div class="detail-key">報告者 / 担当者</div>
-      <div class="detail-value">${item.reporter || "—"} → ${item.assignee || "（なし）"}</div>
+      <div class="detail-value">${esc(item.reporter || "—")} → ${esc(item.assignee || "（なし）")}</div>
     </div>
     <div class="detail-actions">
       ${item.status !== "done"     ? `<button class="btn-resolve"  onclick="changeStatus('done')">解決済にする</button>` : ""}
