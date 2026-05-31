@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SANSEI トラブルシート</title>
+  <style>
+    :root { --primary:#1a56a0; --primary-dark:#134088; --danger:#dc2626; --warning:#d97706; --success:#16a34a; --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb; --gray-400:#9ca3af; --gray-600:#4b5563; --gray-800:#1f2937; --red-100:#fee2e2; --red-600:#dc2626; --yellow-100:#fef3c7; --yellow-600:#d97706; --green-100:#dcfce7; --green-600:#16a34a; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'Hiragino Kaku Gothic ProN','Meiryo',sans-serif; background:var(--gray-100); color:var(--gray-800); min-height:100vh; }
+    .header { background:var(--primary); color:white; padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+    .header h1 { font-size:1.1rem; font-weight:700; white-space:nowrap; }
+    .header-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .header-badges { display:flex; gap:6px; flex-wrap:wrap; }
+    .badge { padding:3px 10px; border-radius:999px; font-size:0.78rem; font-weight:700; white-space:nowrap; }
+    .badge-danger { background:#fee2e2; color:#b91c1c; }
+    .badge-warning { background:#fef3c7; color:#92400e; }
+    .btn-add { background:white; color:var(--primary); border:none; padding:8px 16px; border-radius:6px; font-weight:700; font-size:0.9rem; cursor:pointer; white-space:nowrap; }
+    .btn-sheet { background:rgba(255,255,255,0.15); color:white; border:1px solid rgba(255,255,255,0.4); padding:5px 10px; border-radius:5px; font-size:0.78rem; text-decoration:none; }
+    #statusBar { background:#fffbeb; border-bottom:1px solid #fde68a; padding:8px 16px; font-size:0.82rem; color:#92400e; display:none; align-items:center; }
+    .view-bar { background:white; padding:8px 16px; border-bottom:1px solid var(--gray-200); display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .filter-bar { background:white; padding:10px 16px; border-bottom:1px solid var(--gray-200); display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .filter-group { display:flex; gap:4px; align-items:center; flex-wrap:wrap; }
+    .filter-label { font-size:0.75rem; color:var(--gray-400); font-weight:600; margin-right:2px; }
+    .filter-btn { padding:4px 10px; border-radius:999px; border:1px solid var(--gray-200); background:var(--gray-50); color:var(--gray-600); font-size:0.78rem; cursor:pointer; font-family:inherit; }
+    .filter-btn.active { background:var(--primary); color:white; border-color:var(--primary); }
+    .filter-divider { width:1px; height:20px; background:var(--gray-200); margin:0 4px; }
+    .main { padding:16px; max-width:1200px; margin:0 auto; }
+    .group-section { margin-bottom:20px; }
+    .group-header { display:flex; align-items:center; gap:8px; margin-bottom:8px; cursor:pointer; user-select:none; }
+    .group-title { font-size:0.85rem; font-weight:700; color:var(--gray-600); text-transform:uppercase; letter-spacing:0.05em; }
+    .group-count { background:var(--gray-200); color:var(--gray-600); padding:1px 7px; border-radius:999px; font-size:0.75rem; font-weight:700; }
+    .group-toggle { color:var(--gray-400); font-size:0.8rem; margin-left:auto; }
+    .table-wrap { background:white; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.07); overflow:hidden; }
+    table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    thead th { background:var(--gray-50); padding:10px 12px; text-align:left; font-weight:700; font-size:0.78rem; color:var(--gray-600); border-bottom:1px solid var(--gray-200); white-space:nowrap; }
+    tbody tr { border-bottom:1px solid var(--gray-100); transition:background 0.1s; }
+    tbody tr:last-child { border-bottom:none; }
+    tbody tr:hover { background:var(--gray-50); }
+    td { padding:10px 12px; vertical-align:top; }
+    tr.status-未解決 { border-left:3px solid var(--danger); }
+    tr.status-対応中 { border-left:3px solid var(--warning); }
+    tr.status-解決済 { border-left:3px solid var(--success); opacity:0.75; }
+    .content-cell { max-width:260px; }
+    .content-text { display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; line-height:1.4; }
+    .pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:0.75rem; font-weight:600; white-space:nowrap; }
+    .pill-未解決 { background:var(--red-100); color:var(--red-600); }
+    .pill-対応中 { background:var(--yellow-100); color:var(--yellow-600); }
+    .pill-解決済 { background:var(--green-100); color:var(--green-600); }
+    .tag { display:inline-block; padding:2px 7px; border-radius:4px; font-size:0.75rem; background:var(--gray-100); color:var(--gray-600); }
+    .tag-jimu { background:#ede9fe; color:#5b21b6; }
+    .tag-genba { background:#dbeafe; color:#1e40af; }
+    .actions { display:flex; gap:4px; flex-wrap:wrap; min-width:110px; }
+    .btn-sm { padding:3px 8px; border-radius:4px; border:1px solid var(--gray-200); background:white; font-size:0.75rem; cursor:pointer; font-family:inherit; }
+    .btn-sm.btn-status-対応中 { border-color:var(--warning); color:var(--warning); }
+    .btn-sm.btn-status-解決済 { border-color:var(--success); color:var(--success); }
+    .btn-sm.btn-status-未解決 { border-color:var(--danger); color:var(--danger); }
+    .btn-sm.btn-edit { color:var(--primary); border-color:var(--primary); }
+    .btn-sm.btn-delete { color:var(--danger); border-color:var(--danger); }
+    .empty { text-align:center; padding:40px 20px; color:var(--gray-400); font-size:0.9rem; }
+    .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:center; justify-content:center; padding:16px; }
+    .overlay.open { display:flex; }
+    .modal { background:white; border-radius:12px; padding:24px; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3); }
+    .modal h2 { font-size:1.1rem; margin-bottom:20px; color:var(--primary); }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+    .form-row.single { grid-template-columns:1fr; }
+    .form-group { display:flex; flex-direction:column; gap:4px; }
+    .form-group label { font-size:0.8rem; font-weight:600; color:var(--gray-600); }
+    .form-group label .req { color:var(--danger); }
+    .form-group input, .form-group select, .form-group textarea { padding:8px 10px; border:1px solid var(--gray-200); border-radius:6px; font-size:0.9rem; font-family:inherit; }
+    .form-group textarea { resize:vertical; min-height:80px; }
+    .modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:20px; }
+    .btn-cancel { padding:8px 18px; border:1px solid var(--gray-200); border-radius:6px; background:white; font-family:inherit; font-size:0.9rem; cursor:pointer; }
+    .btn-save { padding:8px 18px; border:none; border-radius:6px; background:var(--primary); color:white; font-family:inherit; font-size:0.9rem; font-weight:700; cursor:pointer; }
+    .btn-save:disabled { opacity:0.6; cursor:not-allowed; }
+    .detail-field { margin-bottom:12px; }
+    .detail-label { font-size:0.75rem; font-weight:700; color:var(--gray-400); margin-bottom:3px; }
+    .detail-value { font-size:0.9rem; color:var(--gray-800); line-height:1.6; white-space:pre-wrap; }
+    @media (max-width:640px) { .header h1 { font-size:0.95rem; } table { font-size:0.8rem; } td,thead th { padding:8px; } .form-row { grid-template-columns:1fr; } .content-cell { max-width:140px; } .actions { min-width:unset; } td:nth-child(3),th:nth-child(3) { display:none; } td:nth-child(6),th:nth-child(6) { display:none; } }
+  </style>
+</head>
+<body>
+<div class="header">
+  <h1>SANSEI トラブルシート</h1>
+  <div class="header-right">
+    <div class="header-badges" id="headerBadges"></div>
+    <a class="btn-sheet" href="https://docs.google.com/spreadsheets/d/1Gpmc22jSzb_WJnl7cjp6wv5GnoaPw2To-3Bda4N-s4o/edit" target="_blank">📊 シート</a>
+    <button class="btn-add" onclick="openModal()">＋ 新規登録</button>
+  </div>
+</div>
+<div id="statusBar"></div>
+<div class="view-bar">
+  <span class="filter-label">グループ:</span>
+  <button class="filter-btn active" onclick="setGroup('status')" data-group="status">ステータス別</button>
+  <button class="filter-btn" onclick="setGroup('client')" data-group="client">元請別</button>
+  <button class="filter-btn" onclick="setGroup('type')" data-group="type">種類別</button>
+  <button class="filter-btn" onclick="setGroup('assignee')" data-group="assignee">担当者別</button>
+  <button class="filter-btn" onclick="setGroup('none')" data-group="none">グループなし</button>
+</div>
+<div class="filter-bar">
+  <div class="filter-group" id="filterStatus">
+    <span class="filter-label">状態:</span>
+    <button class="filter-btn active" onclick="toggleFilter('status','全て')">全て</button>
+    <button class="filter-btn active" onclick="toggleFilter('status','未解決')">未解決</button>
+    <button class="filter-btn active" onclick="toggleFilter('status','対応中')">対応中</button>
+    <button class="filter-btn" onclick="toggleFilter('status','解決済')">解決済</button>
+  </div>
+  <div class="filter-divider"></div>
+  <div class="filter-group" id="filterClient">
+    <span class="filter-label">元請:</span>
+    <button class="filter-btn active" onclick="toggleFilter('client','全て')">全て</button>
+  </div>
+</div>
+<div class="main" id="mainContent"></div>
+<div class="overlay" id="formOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">トラブル登録</h2>
+    <div class="form-row">
+      <div class="form-group"><label>発生日 <span class="req">*</span></label><input type="date" id="f_date"></div>
+      <div class="form-group"><label>状態</label><select id="f_status"><option>未解決</option><option>対応中</option><option>解決済</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>元請（取引先） <span class="req">*</span></label><select id="f_client"><option value="">選択してください</option><option>ATEL</option><option>リケン</option><option>キョウエイ</option><option>ライズ</option><option>その他</option></select></div>
+      <div class="form-group"><label>現場名・案件名</label><input type="text" id="f_site" placeholder="例：〇〇ビル 3F工事"></div>
+    </div>
+    <div class="form-row single">
+      <div class="form-group"><label>種類 <span class="req">*</span></label><select id="f_type"><option value="">選択してください</option><optgroup label="現場系"><option>工事トラブル</option><option>機材・材料</option><option>安全・事故</option><option>クレーム</option></optgroup><optgroup label="事務系"><option>引継ぎ</option><option>依頼・対応</option><option>書類作成・送付</option><option>取引先連絡</option><option>社内調整</option><option>その他</option></optgroup></select></div>
+    </div>
+    <div class="form-row single">
+      <div class="form-group"><label>状況詳細 <span class="req">*</span></label><textarea id="f_detail" placeholder="何が起きたか、現在の状況など"></textarea></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>報告者 <span class="req">*</span></label><select id="f_reporter"><option value="">選択してください</option><option>石倉</option><option>山中</option><option>今井</option></select></div>
+      <div class="form-group"><label>担当者（依頼先）</label><select id="f_assignee"><option value="">（なし）</option><option>石倉</option><option>山中</option><option>今井</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="btn-save" id="saveBtn" onclick="saveRecord()">保存する</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="detailOverlay">
+  <div class="modal">
+    <h2>トラブル詳細</h2>
+    <div id="detailContent"></div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeDetail()">閉じる</button>
+      <button class="btn-save" id="detailEditBtn">編集</button>
+    </div>
+  </div>
+</div>
+<script>
+const GAS_URL='https://script.google.com/macros/s/AKfycbwqhlOc6Fmtr9SR2oevg-e-83hYniVgNkRjGs8WHcxEQ1XOuC9JFb6Ylot1Ti-Q9tdU/exec';
+let records=[],editingRow=null,editingId=null,currentGroup='status',collapsedGroups=new Set();
+let filters={status:new Set(['未解決','対応中']),client:new Set(['全て'])};
+function showStatus(m,t='info'){const b=document.getElementById('statusBar');b.style.display='flex';b.style.background=t==='error'?'#fee2e2':'#fffbeb';b.style.color=t==='error'?'#991b1b':'#92400e';b.textContent=m;if(t!=='loading')setTimeout(()=>b.style.display='none',3000);}
+async function loadFromGAS(){showStatus('データを読み込んでいます...','loading');try{const r=await fetch(GAS_URL);const j=await r.json();if(j.success){records=j.records.map(r=>({id:r['ID'],date:r['発生日'],status:r['状態'],client:r['元請'],site:r['現場名'],type:r['種類'],detail:r['詳細'],reporter:r['報告者'],assignee:r['担当者'],created:r['登録日時'],_row:r['_row']}));document.getElementById('statusBar').style.display='none';render();}else showStatus('エラー: '+j.error,'error');}catch(e){showStatus('通信エラー: '+e.message,'error');}}
+async function postToGAS(p){const r=await fetch(GAS_URL,{method:'POST',body:JSON.stringify(p)});return await r.json();}
+function today(){return new Date().toISOString().slice(0,10);}
+function formatDate(d){return d?String(d).replace(/-/g,'/'):'—';}
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function isJimu(t){return['引継ぎ','依頼・対応','書類作成・送付','取引先連絡','社内調整','その他'].includes(t);}
+function toggleFilter(a,v){if(a==='status'){if(v==='全て')filters.status=new Set(['未解決','対応中']);else{if(filters.status.has(v))filters.status.delete(v);else filters.status.add(v);}}else{if(v==='全て')filters.client=new Set(['全て']);else{filters.client.delete('全て');if(filters.client.has(v)){filters.client.delete(v);if(!filters.client.size)filters.client.add('全て');}else filters.client.add(v);}}updateFilterButtons();render();}
+function updateFilterButtons(){const all=['未解決','対応中','解決済'];const aa=all.every(s=>filters.status.has(s));document.querySelectorAll('#filterStatus .filter-btn').forEach(b=>{const v=b.textContent.trim();b.classList.toggle('active',v==='全て'?aa:filters.status.has(v));});document.querySelectorAll('#filterClient .filter-btn').forEach(b=>b.classList.toggle('active',filters.client.has(b.textContent.trim())));}
+function applyFilters(l){return l.filter(r=>filters.status.has(r.status)&&(filters.client.has('全て')||filters.client.has(r.client)));}
+function setGroup(g){currentGroup=g;document.querySelectorAll('[data-group]').forEach(b=>b.classList.toggle('active',b.dataset.group===g));render();}
+function getGroupValue(r){return currentGroup==='status'?r.status:currentGroup==='client'?r.client||'その他':currentGroup==='type'?r.type:currentGroup==='assignee'?r.assignee||'（なし）':'all';}
+const SO={'未解決':0,'対応中':1,'解決済':2};
+function sortRecords(l){return[...l].sort((a,b)=>{const as=SO[a.status]??99,bs=SO[b.status]??99;return as!==bs?as-bs:(b.date||'').localeCompare(a.date||'');});}
+function updateHeaderBadges(){const u=records.filter(r=>r.status==='未解決').length,p=records.filter(r=>r.status==='対応中').length;const el=document.getElementById('headerBadges');el.innerHTML=(u>0?`<span class="badge badge-danger">未解決 ${u}件</span>`:'')+( p>0?`<span class="badge badge-warning">対応中 ${p}件</span>`:'');}
+function updateClientFilterButtons(){const cls=[...new Set(records.map(r=>r.client))].filter(Boolean).sort();const c=document.getElementById('filterClient');const aa=filters.client.has('全て')?'active':'';c.innerHTML=`<span class="filter-label">元請:</span><button class="filter-btn ${aa}" onclick="toggleFilter('client','全て')">全て</button>`+cls.map(x=>`<button class="filter-btn ${filters.client.has(x)?'active':''}" onclick="toggleFilter('client','${x}')">${x}</button>`).join('');}
+function render(){updateHeaderBadges();updateClientFilterButtons();const f=applyFilters(records);const s=sortRecords(f);const m=document.getElementById('mainContent');if(!s.length){m.innerHTML='<div class="empty">該当するトラブルはありません</div>';return;}if(currentGroup==='none'){m.innerHTML=renderSec('all','一覧',s);return;}const g={};s.forEach(r=>{const k=getGroupValue(r);if(!g[k])g[k]=[];g[k].push(r);});m.innerHTML=Object.keys(g).sort((a,b)=>(SO[a]??99)-(SO[b]??99)).map(k=>renderSec(k,k,g[k])).join('');}
+function renderSec(key,title,rows){const col=collapsedGroups.has(key);const dt=title==='all'?'全件':title;const th=col?'':(`<div class="table-wrap"><table><thead><tr><th>状態</th><th>発生日</th><th>元請</th><th>現場名</th><th>種類</th><th>詳細</th><th>担当者</th><th>操作</th></tr></thead><tbody>${rows.map(r=>renderRow(r)).join('')}</tbody></table></div>`);return`<div class="group-section"><div class="group-header" onclick="toggleGroup('${key}')"><span class="group-title">${dt}</span><span class="group-count">${rows.length}件</span><span class="group-toggle">${col?'▶':'▼'}</span></div>${th}</div>`;}
+function renderRow(r){const p=`<span class="pill pill-${r.status}">${r.status}</span>`;const tt=`<span class="tag ${isJimu(r.type)?'tag-jimu':'tag-genba'}">${escHtml(r.type)}</span>`;const ns=r.status==='未解決'?'対応中':r.status==='対応中'?'解決済':'未解決';const nl=r.status==='未解決'?'→対応中':r.status==='対応中'?'→解決済':'再開';return`<tr class="status-${r.status}" onclick="openDetail('${r.id}')" style="cursor:pointer"><td>${p}</td><td style="white-space:nowrap">${formatDate(r.date)}</td><td><span class="tag">${escHtml(r.client)}</span></td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(r.site)}</td><td>${tt}</td><td class="content-cell"><div class="content-text">${escHtml(r.detail)}</div></td><td style="white-space:nowrap">${escHtml(r.assignee)||'—'}</td><td onclick="event.stopPropagation()"><div class="actions"><button class="btn-sm btn-status-${ns}" onclick="quickStatus('${r.id}',${r._row},'${ns}')">${nl}</button><button class="btn-sm btn-edit" onclick="openModal('${r.id}')">編集</button><button class="btn-sm btn-delete" onclick="deleteRecord('${r.id}',${r._row})">削除</button></div></td></tr>`;}
+function toggleGroup(k){if(collapsedGroups.has(k))collapsedGroups.delete(k);else collapsedGroups.add(k);render();}
+function openModal(id){editingId=id||null;editingRow=null;document.getElementById('modalTitle').textContent=id?'トラブル編集':'トラブル登録';if(id){const r=records.find(x=>x.id===id);if(!r)return;editingRow=r._row;document.getElementById('f_date').value=r.date||'';document.getElementById('f_status').value=r.status;document.getElementById('f_client').value=r.client;document.getElementById('f_site').value=r.site||'';document.getElementById('f_type').value=r.type;document.getElementById('f_detail').value=r.detail||'';document.getElementById('f_reporter').value=r.reporter;document.getElementById('f_assignee').value=r.assignee||'';}else{document.getElementById('f_date').value=today();document.getElementById('f_status').value='未解決';['f_client','f_site','f_type','f_detail','f_reporter','f_assignee'].forEach(i=>document.getElementById(i).value='');}document.getElementById('detailOverlay').classList.remove('open');document.getElementById('formOverlay').classList.add('open');}
+function closeModal(){document.getElementById('formOverlay').classList.remove('open');editingId=null;editingRow=null;}
+async function saveRecord(){const data={'発生日':document.getElementById('f_date').value,'状態':document.getElementById('f_status').value,'元請':document.getElementById('f_client').value,'現場名':document.getElementById('f_site').value,'種類':document.getElementById('f_type').value,'詳細':document.getElementById('f_detail').value.trim(),'報告者':document.getElementById('f_reporter').value,'担当者':document.getElementById('f_assignee').value};if(!data['発生日']||!data['元請']||!data['種類']||!data['詳細']||!data['報告者']){alert('必須項目（＊）をすべて入力してください');return;}const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='保存中...';try{const res=await postToGAS(editingRow?{action:'update',row:editingRow,data}:{action:'add',data});if(res.success){closeModal();showStatus('保存しました');await loadFromGAS();}else showStatus('保存エラー: '+res.error,'error');}catch(e){showStatus('通信エラー','error');}finally{btn.disabled=false;btn.textContent='保存する';}}
+async function quickStatus(id,row,status){const r=records.find(x=>x.id===id);if(!r)return;try{const res=await postToGAS({action:'update',row,data:{'発生日':r.date,'状態':status,'元請':r.client,'現場名':r.site,'種類':r.type,'詳細':r.detail,'報告者':r.reporter,'担当者':r.assignee}});if(res.success)await loadFromGAS();else showStatus('更新エラー','error');}catch(e){showStatus('通信エラー','error');}}
+async function deleteRecord(id,row){const r=records.find(x=>x.id===id);if(!r)return;if(!confirm(`「${(r.detail||'').slice(0,30)}」を削除しますか？`))return;try{const res=await postToGAS({action:'delete',row});if(res.success){showStatus('削除しました');await loadFromGAS();}else showStatus('削除エラー','error');}catch(e){showStatus('通信エラー','error');}}
+function openDetail(id){const r=records.find(x=>x.id===id);if(!r)return;document.getElementById('detailContent').innerHTML=`<div class="detail-field"><div class="detail-label">状態</div><div class="detail-value"><span class="pill pill-${r.status}">${r.status}</span></div></div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px"><div class="detail-field"><div class="detail-label">発生日</div><div class="detail-value">${formatDate(r.date)}</div></div><div class="detail-field"><div class="detail-label">元請</div><div class="detail-value">${escHtml(r.client)}</div></div><div class="detail-field"><div class="detail-label">現場名</div><div class="detail-value">${escHtml(r.site)||'—'}</div></div><div class="detail-field"><div class="detail-label">種類</div><div class="detail-value">${escHtml(r.type)}</div></div><div class="detail-field"><div class="detail-label">報告者</div><div class="detail-value">${escHtml(r.reporter)}</div></div><div class="detail-field"><div class="detail-label">担当者</div><div class="detail-value">${escHtml(r.assignee)||'—'}</div></div></div><div class="detail-field"><div class="detail-label">状況詳細</div><div class="detail-value">${escHtml(r.detail)}</div></div><div class="detail-field"><div class="detail-label">登録日時</div><div class="detail-value" style="font-size:0.8rem;color:var(--gray-400)">${escHtml(r.created)}</div></div>`;document.getElementById('detailEditBtn').onclick=()=>{closeDetail();openModal(id);};document.getElementById('detailOverlay').classList.add('open');}
+function closeDetail(){document.getElementById('detailOverlay').classList.remove('open');}
+document.getElementById('formOverlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('detailOverlay').addEventListener('click',function(e){if(e.target===this)closeDetail();});
+loadFromGAS();
+</script>
+</body>
+</html>
