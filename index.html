@@ -451,6 +451,7 @@ animation: syncAnim 1.2s infinite;
 <button class="filter-chip" data-filter="ライズ" onclick="setFilter('ライズ')">ライズ</button>
 <button class="filter-chip" data-filter="外注先" onclick="setFilter('外注先')">外注先</button>
 <button class="filter-chip" data-filter="外注職人" onclick="setFilter('外注職人')">外注職人</button>
+<button class="filter-chip" data-filter="社内連絡" onclick="setFilter('社内連絡')">社内連絡</button>
 <button class="filter-chip" data-filter="株式会社individual" onclick="setFilter('株式会社individual')">individual</button>
 <button class="filter-chip" data-filter="株式会社Alpha Electro" onclick="setFilter('株式会社Alpha Electro')">Alpha Electro</button>
 </div>
@@ -511,15 +512,24 @@ animation: syncAnim 1.2s infinite;
 <div class="form-row">
 <label class="form-label">元請（取引先）</label>
 <select class="form-select" id="fClient">
+<optgroup label="元請">
 <option value="株式会社ATEL">株式会社ATEL</option>
 <option value="リケンエナジー有限会社">リケンエナジー有限会社</option>
 <option value="株式会社キョウエイ">株式会社キョウエイ</option>
 <option value="ライズ">ライズ</option>
+</optgroup>
+<optgroup label="外注">
 <option value="外注先">外注先</option>
 <option value="外注職人">外注職人</option>
+</optgroup>
+<optgroup label="社内">
+<option value="社内連絡">社内連絡</option>
+</optgroup>
+<optgroup label="その他">
 <option value="株式会社individual">株式会社individual</option>
 <option value="株式会社Alpha Electro">株式会社Alpha Electro</option>
 <option value="その他">その他</option>
+</optgroup>
 </select>
 </div>
 
@@ -532,6 +542,7 @@ animation: syncAnim 1.2s infinite;
 <label class="form-label">種類</label>
 <select class="form-select" id="fType">
 <optgroup label="現場系">
+<option value="工事案件詳細">工事案件詳細</option>
 <option value="工事トラブル">工事トラブル</option>
 <option value="機材・材料">機材・材料</option>
 <option value="安全・事故">安全・事故</option>
@@ -703,8 +714,8 @@ const ORDER = {
 status: ["open", "progress", "done"],
 assignee: [],
 salesPerson: [],
-client: ["株式会社ATEL","リケンエナジー有限会社","株式会社キョウエイ","ライズ","外注先","外注職人","株式会社individual","株式会社Alpha Electro","その他"],
-type: ["工事トラブル","機材・材料","安全・事故","クレーム","引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
+client: ["株式会社ATEL","リケンエナジー有限会社","株式会社キョウエイ","ライズ","外注先","外注職人","社内連絡","株式会社individual","株式会社Alpha Electro","その他"],
+type: ["工事案件詳細","工事トラブル","機材・材料","安全・事故","クレーム","引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
 };
 list.forEach(item => {
 let key = "";
