@@ -678,7 +678,11 @@ function gasGet() {
     const cleanup = () => { try { document.head.removeChild(script); } catch(e){} delete window[cbName]; showSync(false); };
     window[cbName] = function(data) {
       cleanup();
-      if (data && data.items) { items = data.items; save(); render(); }
+      if (data && data.items) {
+        // id を必ず文字列に正規化（GASから数値で来る場合の型不一致を防ぐ）
+        items = data.items.map(i => ({...i, id: String(i.id)}));
+        save(); render();
+      }
       resolve();
     };
     script.onerror = () => { cleanup(); resolve(); };
@@ -746,7 +750,7 @@ function cardHTML(item) {
     <div class="card-body">
       <div class="card-row1">
         <div class="card-title">${esc(item.site || "（無題）")}</div>
-        <div class="card-date">${item.date || ""}</div>
+        <div class="card-date">${(item.date || "").substring(0, 10)}</div>
       </div>
       ${item.detail ? `<div class="card-detail">${esc(item.detail)}</div>` : ""}
       <div class="card-tags">${tags}</div>
@@ -852,7 +856,7 @@ function openDetail(id) {
   </div>
   <div class="detail-section">
     <div class="detail-key">発生日</div>
-    <div class="detail-value">${item.date || "—"}</div>
+    <div class="detail-value">${(item.date || "—").substring(0, 10)}</div>
   </div>
   <div class="detail-section">
     <div class="detail-key">営業担当者</div>
