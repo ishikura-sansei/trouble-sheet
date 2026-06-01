@@ -5,428 +5,423 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>SANSEI トラブルシート</title>
 <style>
-  /* ============================================================
-     RESET & BASE
-  ============================================================ */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { font-size: 14px; -webkit-text-size-adjust: 100%; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
-    background: #f1f5f9;
-    color: #1e293b;
-    min-height: 100vh;
-    padding-bottom: 80px;
-  }
-  button { cursor: pointer; border: none; background: none; font: inherit; }
-  input, select, textarea { font: inherit; }
+/* ============================================================
+   RESET & BASE
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+  background: #f1f5f9;
+  color: #1e293b;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+button { cursor: pointer; border: none; background: none; font: inherit; }
+input, select, textarea { font: inherit; }
 
-  /* ============================================================
-     STATUS COLORS
-  ============================================================ */
-  :root {
-    --clr-open:      #ef4444;  /* 未解決 */
-    --clr-progress:  #f59e0b;  /* 対応中 */
-    --clr-done:      #22c55e;  /* 解決済 */
-    --clr-border:    #e2e8f0;
-    --clr-surface:   #ffffff;
-    --clr-muted:     #94a3b8;
-    --clr-primary:   #1e40af;
-  }
+/* ============================================================
+   STATUS COLORS
+============================================================ */
+:root {
+  --clr-open: #ef4444;     /* 未解決 */
+  --clr-progress: #f59e0b; /* 対応中 */
+  --clr-done: #22c55e;     /* 解決済 */
+  --clr-border: #e2e8f0;
+  --clr-surface: #ffffff;
+  --clr-muted: #94a3b8;
+  --clr-primary: #1e40af;
+}
 
-  /* ============================================================
-     HEADER
-  ============================================================ */
-  .header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff;
-    border-bottom: 1px solid var(--clr-border);
-    padding: 12px 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .header-title {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #0f172a;
-    flex: 1;
-  }
-  .header-count {
-    font-size: 0.75rem;
-    color: var(--clr-muted);
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 10px;
-  }
-  .header-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px;
-    background: var(--clr-primary);
-    border-radius: 8px;
-  }
-  .header-icon svg { color: #fff; }
+/* ============================================================
+   HEADER
+============================================================ */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid var(--clr-border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.header-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  flex: 1;
+}
+.header-count {
+  font-size: 0.75rem;
+  color: var(--clr-muted);
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.header-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  background: var(--clr-primary);
+  border-radius: 8px;
+}
+.header-icon svg { color: #fff; }
 
-  /* ============================================================
-     FILTER BAR
-  ============================================================ */
-  .filter-bar {
-    background: #fff;
-    border-bottom: 1px solid var(--clr-border);
-    padding: 10px 16px;
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .filter-bar::-webkit-scrollbar { display: none; }
+/* ============================================================
+   FILTER BAR
+============================================================ */
+.filter-bar {
+  background: #fff;
+  border-bottom: 1px solid var(--clr-border);
+  padding: 10px 16px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1.5px solid var(--clr-border);
+  color: #475569;
+  background: #fff;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.filter-chip.active {
+  background: var(--clr-primary);
+  border-color: var(--clr-primary);
+  color: #fff;
+}
+.filter-chip .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
 
-  .filter-chip {
-    flex-shrink: 0;
-    display: flex; align-items: center; gap: 4px;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.78rem;
-    font-weight: 500;
-    border: 1.5px solid var(--clr-border);
-    color: #475569;
-    background: #fff;
-    white-space: nowrap;
-    transition: all .15s;
-  }
-  .filter-chip.active {
-    background: var(--clr-primary);
-    border-color: var(--clr-primary);
-    color: #fff;
-  }
-  .filter-chip .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-  }
+/* ============================================================
+   GROUP TABS
+============================================================ */
+.group-tabs {
+  background: #f8fafc;
+  border-bottom: 1px solid var(--clr-border);
+  padding: 0 16px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.group-tabs::-webkit-scrollbar { display: none; }
+.group-tab {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--clr-muted);
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+}
+.group-tab.active {
+  color: var(--clr-primary);
+  border-bottom-color: var(--clr-primary);
+}
 
-  /* ============================================================
-     GROUP TABS
-  ============================================================ */
-  .group-tabs {
-    background: #f8fafc;
-    border-bottom: 1px solid var(--clr-border);
-    padding: 0 16px;
-    display: flex;
-    gap: 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .group-tabs::-webkit-scrollbar { display: none; }
-  .group-tab {
-    flex-shrink: 0;
-    padding: 10px 14px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: var(--clr-muted);
-    border-bottom: 2px solid transparent;
-    transition: all .15s;
-  }
-  .group-tab.active {
-    color: var(--clr-primary);
-    border-bottom-color: var(--clr-primary);
-  }
+/* ============================================================
+   MAIN LIST
+============================================================ */
+.main {
+  padding: 12px 12px 0;
+}
+.group-section { margin-bottom: 20px; }
+.group-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--clr-muted);
+  padding: 0 4px 6px;
+}
+.cards { display: flex; flex-direction: column; gap: 6px; }
 
-  /* ============================================================
-     MAIN LIST
-  ============================================================ */
-  .main {
-    padding: 12px 12px 0;
-  }
-  .group-section { margin-bottom: 20px; }
-  .group-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    color: var(--clr-muted);
-    padding: 0 4px 6px;
-  }
-  .cards { display: flex; flex-direction: column; gap: 6px; }
+/* ============================================================
+   CARD
+============================================================ */
+.card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  transition: box-shadow .15s;
+}
+.card:active { box-shadow: 0 0 0 2px #93c5fd; }
+.card-bar {
+  width: 4px;
+  flex-shrink: 0;
+}
+.card-bar.open { background: var(--clr-open); }
+.card-bar.progress { background: var(--clr-progress); }
+.card-bar.done { background: var(--clr-done); }
+.card-body {
+  flex: 1;
+  padding: 10px 12px;
+  min-width: 0;
+}
+.card-row1 {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 5px;
+}
+.card-title {
+  flex: 1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.card-date {
+  font-size: 0.7rem;
+  color: var(--clr-muted);
+  flex-shrink: 0;
+}
+.card-detail {
+  font-size: 0.78rem;
+  color: #475569;
+  line-height: 1.4;
+  margin-bottom: 7px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+.tag-status-open     { color: var(--clr-open);   background: #fef2f2; border-color: #fecaca; }
+.tag-status-progress { color: #b45309;            background: #fffbeb; border-color: #fde68a; }
+.tag-status-done     { color: #15803d;            background: #f0fdf4; border-color: #bbf7d0; }
+.tag-client  { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
+.tag-type    { color: #5b21b6; background: #f5f3ff; border-color: #ddd6fe; }
+.tag-person  { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
+.card-empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--clr-muted);
+  font-size: 0.82rem;
+}
 
-  /* ============================================================
-     CARD
-  ============================================================ */
-  .card {
-    background: var(--clr-surface);
-    border: 1px solid var(--clr-border);
-    border-radius: 10px;
-    overflow: hidden;
-    display: flex;
-    transition: box-shadow .15s;
-  }
-  .card:active { box-shadow: 0 0 0 2px #93c5fd; }
-  .card-bar {
-    width: 4px;
-    flex-shrink: 0;
-  }
-  .card-bar.open     { background: var(--clr-open); }
-  .card-bar.progress { background: var(--clr-progress); }
-  .card-bar.done     { background: var(--clr-done); }
+/* ============================================================
+   FAB
+============================================================ */
+.fab {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  z-index: 200;
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(30,64,175,.4);
+  transition: transform .15s, box-shadow .15s;
+}
+.fab:active { transform: scale(.94); box-shadow: 0 2px 6px rgba(30,64,175,.3); }
 
-  .card-body {
-    flex: 1;
-    padding: 10px 12px;
-    min-width: 0;
-  }
-  .card-row1 {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
-    margin-bottom: 5px;
-  }
-  .card-title {
-    flex: 1;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #0f172a;
-    line-height: 1.4;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .card-date {
-    font-size: 0.7rem;
-    color: var(--clr-muted);
-    flex-shrink: 0;
-  }
-  .card-detail {
-    font-size: 0.78rem;
-    color: #475569;
-    line-height: 1.4;
-    margin-bottom: 7px;
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-  .card-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-  }
-  .tag {
-    font-size: 0.68rem;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 4px;
-    border: 1px solid transparent;
-  }
-  .tag-status-open     { color: var(--clr-open);     background: #fef2f2; border-color: #fecaca; }
-  .tag-status-progress { color: #b45309;             background: #fffbeb; border-color: #fde68a; }
-  .tag-status-done     { color: #15803d;             background: #f0fdf4; border-color: #bbf7d0; }
-  .tag-client   { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
-  .tag-type     { color: #5b21b6; background: #f5f3ff; border-color: #ddd6fe; }
-  .tag-person   { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
+/* ============================================================
+   BOTTOM SHEET OVERLAY
+============================================================ */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 300;
+}
+.overlay.show { display: block; }
 
-  .card-empty {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--clr-muted);
-    font-size: 0.82rem;
-  }
+/* ============================================================
+   BOTTOM SHEET
+============================================================ */
+.sheet {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 400;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  padding: 0 0 env(safe-area-inset-bottom, 0);
+  max-height: 92vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform .28s cubic-bezier(.32,.72,0,1);
+  -webkit-overflow-scrolling: touch;
+}
+.sheet.show { transform: translateY(0); }
+.sheet-handle {
+  width: 36px; height: 4px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+.sheet-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--clr-border);
+}
+.sheet-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+.sheet-close {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  display: flex; align-items: center; justify-content: center;
+  color: #64748b;
+}
+.sheet-body { padding: 16px; }
 
-  /* ============================================================
-     FAB
-  ============================================================ */
-  .fab {
-    position: fixed;
-    bottom: 20px; right: 20px;
-    z-index: 200;
-    width: 52px; height: 52px;
-    border-radius: 50%;
-    background: var(--clr-primary);
-    color: #fff;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 12px rgba(30,64,175,.4);
-    transition: transform .15s, box-shadow .15s;
-  }
-  .fab:active { transform: scale(.94); box-shadow: 0 2px 6px rgba(30,64,175,.3); }
+/* ============================================================
+   FORM
+============================================================ */
+.form-row { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--clr-border);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #0f172a;
+  background: #fff;
+  outline: none;
+  transition: border-color .15s;
+  -webkit-appearance: none;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus { border-color: var(--clr-primary); }
+.form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
+.form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-submit {
+  width: 100%;
+  padding: 12px;
+  background: var(--clr-primary);
+  color: #fff;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-top: 6px;
+  transition: opacity .15s;
+}
+.form-submit:active { opacity: .85; }
 
-  /* ============================================================
-     BOTTOM SHEET OVERLAY
-  ============================================================ */
-  .overlay {
-    display: none;
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,.45);
-    z-index: 300;
-  }
-  .overlay.show { display: block; }
+/* ============================================================
+   DETAIL SHEET
+============================================================ */
+.detail-section {
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--clr-border);
+}
+.detail-section:last-child { border-bottom: none; }
+.detail-key {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--clr-muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 4px;
+}
+.detail-value {
+  font-size: 0.88rem;
+  color: #0f172a;
+  line-height: 1.55;
+}
+.detail-meta {
+  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
+}
+.detail-actions {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 14px 16px;
+}
+.btn-resolve {
+  padding: 10px;
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1.5px solid #bbf7d0;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+.btn-delete {
+  padding: 10px;
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1.5px solid #fecaca;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+}
+.btn-progress {
+  padding: 10px;
+  background: #fffbeb;
+  color: #b45309;
+  border: 1.5px solid #fde68a;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-align: center;
+  grid-column: span 2;
+}
 
-  /* ============================================================
-     BOTTOM SHEET
-  ============================================================ */
-  .sheet {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    z-index: 400;
-    background: #fff;
-    border-radius: 16px 16px 0 0;
-    padding: 0 0 env(safe-area-inset-bottom, 0);
-    max-height: 92vh;
-    overflow-y: auto;
-    transform: translateY(100%);
-    transition: transform .28s cubic-bezier(.32,.72,0,1);
-    -webkit-overflow-scrolling: touch;
-  }
-  .sheet.show { transform: translateY(0); }
-
-  .sheet-handle {
-    width: 36px; height: 4px;
-    background: #e2e8f0;
-    border-radius: 2px;
-    margin: 10px auto 0;
-  }
-  .sheet-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px 12px;
-    border-bottom: 1px solid var(--clr-border);
-  }
-  .sheet-title {
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #0f172a;
-  }
-  .sheet-close {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    background: #f1f5f9;
-    display: flex; align-items: center; justify-content: center;
-    color: #64748b;
-  }
-  .sheet-body { padding: 16px; }
-
-  /* ============================================================
-     FORM
-  ============================================================ */
-  .form-row { margin-bottom: 14px; }
-  .form-label {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 700;
-    color: #64748b;
-    margin-bottom: 5px;
-    text-transform: uppercase;
-    letter-spacing: .03em;
-  }
-  .form-input, .form-select, .form-textarea {
-    width: 100%;
-    padding: 9px 12px;
-    border: 1.5px solid var(--clr-border);
-    border-radius: 8px;
-    font-size: 0.85rem;
-    color: #0f172a;
-    background: #fff;
-    outline: none;
-    transition: border-color .15s;
-    -webkit-appearance: none;
-  }
-  .form-input:focus,
-  .form-select:focus,
-  .form-textarea:focus { border-color: var(--clr-primary); }
-  .form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
-  .form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-  .form-submit {
-    width: 100%;
-    padding: 12px;
-    background: var(--clr-primary);
-    color: #fff;
-    border-radius: 10px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    margin-top: 6px;
-    transition: opacity .15s;
-  }
-  .form-submit:active { opacity: .85; }
-
-  /* ============================================================
-     DETAIL SHEET
-  ============================================================ */
-  .detail-section {
-    padding: 14px 16px 10px;
-    border-bottom: 1px solid var(--clr-border);
-  }
-  .detail-section:last-child { border-bottom: none; }
-  .detail-key {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--clr-muted);
-    text-transform: uppercase;
-    letter-spacing: .04em;
-    margin-bottom: 4px;
-  }
-  .detail-value {
-    font-size: 0.88rem;
-    color: #0f172a;
-    line-height: 1.55;
-  }
-  .detail-meta {
-    display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
-  }
-  .detail-actions {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    padding: 14px 16px;
-  }
-  .btn-resolve {
-    padding: 10px;
-    background: #f0fdf4;
-    color: #15803d;
-    border: 1.5px solid #bbf7d0;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-align: center;
-  }
-  .btn-delete {
-    padding: 10px;
-    background: #fef2f2;
-    color: #dc2626;
-    border: 1.5px solid #fecaca;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-align: center;
-  }
-  .btn-progress {
-    padding: 10px;
-    background: #fffbeb;
-    color: #b45309;
-    border: 1.5px solid #fde68a;
-    border-radius: 8px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    text-align: center;
-    grid-column: span 2;
-  }
-
-  /* ============================================================
-     LOADING / SYNC
-  ============================================================ */
-  .sync-bar {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--clr-primary) 0%, #60a5fa 100%);
-    z-index: 999;
-    animation: syncAnim 1.2s infinite;
-  }
-  @keyframes syncAnim {
-    0%   { opacity: 1; }
-    50%  { opacity: .5; }
-    100% { opacity: 1; }
-  }
+/* ============================================================
+   LOADING / SYNC
+============================================================ */
+.sync-bar {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--clr-primary) 0%, #60a5fa 100%);
+  z-index: 999;
+  animation: syncAnim 1.2s infinite;
+}
+@keyframes syncAnim {
+  0%   { opacity: 1; }
+  50%  { opacity: .5; }
+  100% { opacity: 1; }
+}
 </style>
 </head>
 <body>
@@ -492,7 +487,7 @@
 <button class="fab" onclick="openAdd()" aria-label="追加">
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
     <line x1="12" y1="5" x2="12" y2="19"/>
-    <line x1="5" y1="12" x2="19" y2="12"/>
+    <line x1="5"  y1="12" x2="19" y2="12"/>
   </svg>
 </button>
 
@@ -506,12 +501,13 @@
     <span class="sheet-title">新規登録</span>
     <button class="sheet-close" onclick="closeAll()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
+        <line x1="18" y1="6"  x2="6"  y2="18"/>
+        <line x1="6"  y1="6"  x2="18" y2="18"/>
       </svg>
     </button>
   </div>
   <div class="sheet-body">
+
     <div class="form-row-2col">
       <div class="form-row">
         <label class="form-label">発生日</label>
@@ -526,6 +522,7 @@
         </select>
       </div>
     </div>
+
     <div class="form-row">
       <label class="form-label">元請（取引先）</label>
       <select class="form-select" id="fClient">
@@ -540,10 +537,12 @@
         <option value="その他">その他</option>
       </select>
     </div>
+
     <div class="form-row">
       <label class="form-label">現場名・案件名</label>
       <input type="text" class="form-input" id="fSite" placeholder="例：〇〇マンション 電気工事">
     </div>
+
     <div class="form-row">
       <label class="form-label">種類</label>
       <select class="form-select" id="fType">
@@ -563,10 +562,12 @@
         </optgroup>
       </select>
     </div>
+
     <div class="form-row">
       <label class="form-label">状況詳細</label>
       <textarea class="form-textarea" id="fDetail" placeholder="状況をできるだけ具体的に記入"></textarea>
     </div>
+
     <div class="form-row-2col">
       <div class="form-row">
         <label class="form-label">営業担当者</label>
@@ -574,13 +575,24 @@
       </div>
       <div class="form-row">
         <label class="form-label">報告者</label>
-        <input type="text" class="form-input" id="fReporter" placeholder="報告者名">
+        <select class="form-select" id="fReporter">
+          <option value="石倉">石倉</option>
+          <option value="山中">山中</option>
+          <option value="今井">今井</option>
+        </select>
       </div>
     </div>
+
     <div class="form-row">
       <label class="form-label">担当者（依頼先）</label>
-      <input type="text" class="form-input" id="fAssignee" placeholder="担当者名（任意）">
+      <select class="form-select" id="fAssignee">
+        <option value="">（なし）</option>
+        <option value="石倉">石倉</option>
+        <option value="山中">山中</option>
+        <option value="今井">今井</option>
+      </select>
     </div>
+
     <button class="form-submit" onclick="submitAdd()">登録する</button>
   </div>
 </div>
@@ -592,8 +604,8 @@
     <span class="sheet-title" id="dTitle">詳細</span>
     <button class="sheet-close" onclick="closeAll()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
+        <line x1="18" y1="6"  x2="6"  y2="18"/>
+        <line x1="6"  y1="6"  x2="18" y2="18"/>
       </svg>
     </button>
   </div>
@@ -603,8 +615,6 @@
 <script>
 /* ============================================================
    CONFIG
-   GAS_URL: Google Apps ScriptのデプロイURLをここに貼る
-   空のままにするとローカル動作（データはブラウザに保存）
 ============================================================ */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbz2qBIY28FEvOp7P0xOxBTbZPHiCwdXwtkFeu4WsI6r4rrc3gSVzKYNaZrvjl_deMTe/exec";
 
@@ -620,9 +630,9 @@ let detailId     = null;
    STATUS CONFIG
 ============================================================ */
 const STATUS = {
-  open:     { label: "未解決", barClass: "open",     tagClass: "tag-status-open" },
+  open:     { label: "未解決", barClass: "open",     tagClass: "tag-status-open"     },
   progress: { label: "対応中", barClass: "progress", tagClass: "tag-status-progress" },
-  done:     { label: "解決済", barClass: "done",     tagClass: "tag-status-done" },
+  done:     { label: "解決済", barClass: "done",     tagClass: "tag-status-done"     },
 };
 
 /* ============================================================
@@ -644,11 +654,11 @@ function load() {
 function showSync(v) {
   document.getElementById("syncBar").style.display = v ? "block" : "none";
 }
+
 async function gasPost(payload) {
   if (!GAS_URL) return null;
   showSync(true);
   try {
-    // no-cors で CORS 制限を回避（GAS 側は実行される、レスポンスは読めない）
     await fetch(GAS_URL, {
       method: "POST",
       mode: "no-cors",
@@ -658,12 +668,13 @@ async function gasPost(payload) {
   } catch(e) {}
   showSync(false);
 }
+
 function gasGet() {
   if (!GAS_URL) return Promise.resolve();
   showSync(true);
   return new Promise((resolve) => {
     const cbName = "_gascb_" + Date.now();
-    const script  = document.createElement("script");
+    const script = document.createElement("script");
     const cleanup = () => { try { document.head.removeChild(script); } catch(e){} delete window[cbName]; showSync(false); };
     window[cbName] = function(data) {
       cleanup();
@@ -682,10 +693,10 @@ function gasGet() {
 ============================================================ */
 function getFiltered() {
   return items.filter(item => {
-    if (activeFilter === "all")              return true;
-    if (activeFilter === "open")             return item.status === "open";
-    if (activeFilter === "progress")         return item.status === "progress";
-    if (activeFilter === "done")             return item.status === "done";
+    if (activeFilter === "all")      return true;
+    if (activeFilter === "open")     return item.status === "open";
+    if (activeFilter === "progress") return item.status === "progress";
+    if (activeFilter === "done")     return item.status === "done";
     return item.client === activeFilter;
   });
 }
@@ -694,16 +705,15 @@ function groupItems(list) {
   if (activeGroup === "none") return [{ label: null, items: list }];
   const groups = {};
   const ORDER = {
-    status:   ["open", "progress", "done"],
+    status:      ["open", "progress", "done"],
     assignee:    [],
     salesPerson: [],
-    client:   ["株式会社ATEL", "リケンエナジー有限会社", "株式会社キョウエイ", "ライズ", "外注先", "外注職人", "株式会社individual", "株式会社Alpha Electro", "その他"],
-    type:     ["工事トラブル","機材・材料","安全・事故","クレーム",
-               "引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
+    client:      ["株式会社ATEL","リケンエナジー有限会社","株式会社キョウエイ","ライズ","外注先","外注職人","株式会社individual","株式会社Alpha Electro","その他"],
+    type:        ["工事トラブル","機材・材料","安全・事故","クレーム","引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
   };
   list.forEach(item => {
     let key = "";
-    if      (activeGroup === "status")      key = item.status;
+    if (activeGroup === "status")      key = item.status;
     else if (activeGroup === "assignee")    key = item.assignee || "";
     else if (activeGroup === "salesPerson") key = item.salesPerson || "";
     else if (activeGroup === "client")      key = item.client;
@@ -711,10 +721,10 @@ function groupItems(list) {
     if (!groups[key]) groups[key] = [];
     groups[key].push(item);
   });
-  const order = ORDER[activeGroup] || [];
+  const order  = ORDER[activeGroup] || [];
   const sorted = [...order.filter(k => groups[k]), ...Object.keys(groups).filter(k => !order.includes(k))];
   return sorted.map(key => ({
-    label: activeGroup === "status" ? (STATUS[key]?.label || key)
+    label: activeGroup === "status"      ? (STATUS[key]?.label || key)
          : activeGroup === "salesPerson" ? (key || "営業担当者なし")
          : (key || "担当者なし"),
     items: groups[key],
@@ -728,40 +738,36 @@ function cardHTML(item) {
     `<span class="tag tag-client">${item.client}</span>`,
     `<span class="tag tag-type">${item.type}</span>`,
     item.salesPerson ? `<span class="tag tag-person">${item.salesPerson}</span>` : "",
-    item.assignee    ? `<span class="tag tag-person">${item.assignee}</span>` : "",
+    item.assignee    ? `<span class="tag tag-person">${item.assignee}</span>`    : "",
   ].filter(Boolean).join("");
-
   return `
-    <div class="card" onclick="openDetail('${item.id}')">
-      <div class="card-bar ${st.barClass}"></div>
-      <div class="card-body">
-        <div class="card-row1">
-          <div class="card-title">${esc(item.site || "（無題）")}</div>
-          <div class="card-date">${item.date || ""}</div>
-        </div>
-        ${item.detail ? `<div class="card-detail">${esc(item.detail)}</div>` : ""}
-        <div class="card-tags">${tags}</div>
+  <div class="card" onclick="openDetail('${item.id}')">
+    <div class="card-bar ${st.barClass}"></div>
+    <div class="card-body">
+      <div class="card-row1">
+        <div class="card-title">${esc(item.site || "（無題）")}</div>
+        <div class="card-date">${item.date || ""}</div>
       </div>
-    </div>`;
+      ${item.detail ? `<div class="card-detail">${esc(item.detail)}</div>` : ""}
+      <div class="card-tags">${tags}</div>
+    </div>
+  </div>`;
 }
 
 function render() {
   const filtered = getFiltered();
   document.getElementById("headerCount").textContent = filtered.length + "件";
-
   const groups = groupItems(filtered);
-  const main = document.getElementById("mainList");
-
+  const main   = document.getElementById("mainList");
   if (filtered.length === 0) {
     main.innerHTML = `<div class="card-empty">該当するデータがありません</div>`;
     return;
   }
-
   main.innerHTML = groups.map(g => `
-    <div class="group-section">
-      ${g.label ? `<div class="group-label">${g.label}（${g.items.length}）</div>` : ""}
-      <div class="cards">${g.items.map(cardHTML).join("")}</div>
-    </div>`).join("");
+  <div class="group-section">
+    ${g.label ? `<div class="group-label">${g.label}（${g.items.length}）</div>` : ""}
+    <div class="cards">${g.items.map(cardHTML).join("")}</div>
+  </div>`).join("");
 }
 
 /* ============================================================
@@ -785,28 +791,31 @@ function setGroup(g) {
 ============================================================ */
 function openAdd() {
   const today = new Date().toISOString().slice(0, 10);
-  document.getElementById("fDate").value = today;
-  document.getElementById("fStatus").value = "open";
-  document.getElementById("fSite").value = "";
-  document.getElementById("fDetail").value = "";
+  document.getElementById("fDate").value        = today;
+  document.getElementById("fStatus").value      = "open";
+  document.getElementById("fClient").selectedIndex = 0;
+  document.getElementById("fSite").value        = "";
+  document.getElementById("fType").selectedIndex   = 0;
+  document.getElementById("fDetail").value      = "";
   document.getElementById("fSalesPerson").value = "";
-  document.getElementById("fReporter").value = "";
-  document.getElementById("fAssignee").value = "";
+  document.getElementById("fReporter").value    = "石倉";
+  document.getElementById("fAssignee").value    = "";
   showSheet("addSheet");
 }
+
 async function submitAdd() {
   const item = {
-    id:       Date.now().toString(),
-    date:     document.getElementById("fDate").value,
-    status:   document.getElementById("fStatus").value,
-    client:   document.getElementById("fClient").value,
-    site:     document.getElementById("fSite").value.trim(),
-    type:     document.getElementById("fType").value,
-    detail:   document.getElementById("fDetail").value.trim(),
+    id:          Date.now().toString(),
+    date:        document.getElementById("fDate").value,
+    status:      document.getElementById("fStatus").value,
+    client:      document.getElementById("fClient").value,
+    site:        document.getElementById("fSite").value.trim(),
+    type:        document.getElementById("fType").value,
+    detail:      document.getElementById("fDetail").value.trim(),
     salesPerson: document.getElementById("fSalesPerson").value.trim(),
-    reporter:    document.getElementById("fReporter").value.trim(),
-    assignee:    document.getElementById("fAssignee").value.trim(),
-    createdAt: new Date().toISOString(),
+    reporter:    document.getElementById("fReporter").value,
+    assignee:    document.getElementById("fAssignee").value,
+    createdAt:   new Date().toISOString(),
   };
   if (!item.site) { alert("現場名・案件名を入力してください"); return; }
   items.unshift(item);
@@ -824,41 +833,40 @@ function openDetail(id) {
   if (!item) return;
   detailId = id;
   const st = STATUS[item.status] || STATUS.open;
-
   document.getElementById("dTitle").textContent = item.site || "詳細";
   document.getElementById("detailBody").innerHTML = `
-    <div class="detail-section">
-      <div class="detail-meta">
-        <span class="tag ${st.tagClass}">${st.label}</span>
-        <span class="tag tag-client">${item.client}</span>
-        <span class="tag tag-type">${item.type}</span>
-      </div>
+  <div class="detail-section">
+    <div class="detail-meta">
+      <span class="tag ${st.tagClass}">${st.label}</span>
+      <span class="tag tag-client">${item.client}</span>
+      <span class="tag tag-type">${item.type}</span>
     </div>
-    <div class="detail-section">
-      <div class="detail-key">現場名・案件名</div>
-      <div class="detail-value">${esc(item.site || "—")}</div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-key">状況詳細</div>
-      <div class="detail-value">${esc(item.detail || "—").replace(/\n/g,"<br>")}</div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-key">発生日</div>
-      <div class="detail-value">${item.date || "—"}</div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-key">営業担当者</div>
-      <div class="detail-value">${esc(item.salesPerson || "—")}</div>
-    </div>
-    <div class="detail-section">
-      <div class="detail-key">報告者 / 担当者</div>
-      <div class="detail-value">${esc(item.reporter || "—")} → ${esc(item.assignee || "（なし）")}</div>
-    </div>
-    <div class="detail-actions">
-      ${item.status !== "done"     ? `<button class="btn-resolve"  onclick="changeStatus('done')">解決済にする</button>` : ""}
-      ${item.status === "open"     ? `<button class="btn-progress" onclick="changeStatus('progress')">対応中にする</button>` : ""}
-      <button class="btn-delete"   onclick="deleteItem()">削除</button>
-    </div>`;
+  </div>
+  <div class="detail-section">
+    <div class="detail-key">現場名・案件名</div>
+    <div class="detail-value">${esc(item.site || "—")}</div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-key">状況詳細</div>
+    <div class="detail-value">${esc(item.detail || "—").replace(/\n/g,"<br>")}</div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-key">発生日</div>
+    <div class="detail-value">${item.date || "—"}</div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-key">営業担当者</div>
+    <div class="detail-value">${esc(item.salesPerson || "—")}</div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-key">報告者 / 担当者</div>
+    <div class="detail-value">${esc(item.reporter || "—")} → ${esc(item.assignee || "（なし）")}</div>
+  </div>
+  <div class="detail-actions">
+    ${item.status !== "done"     ? `<button class="btn-resolve"  onclick="changeStatus('done')">解決済にする</button>` : ""}
+    ${item.status === "open"     ? `<button class="btn-progress" onclick="changeStatus('progress')">対応中にする</button>` : ""}
+    <button class="btn-delete" onclick="deleteItem()">削除</button>
+  </div>`;
   showSheet("detailSheet");
 }
 
@@ -871,6 +879,7 @@ async function changeStatus(newStatus) {
   render();
   if (GAS_URL) await gasPost({ action: "update", id: item.id, status: newStatus });
 }
+
 async function deleteItem() {
   if (!confirm("このデータを削除しますか？")) return;
   const id = detailId;
