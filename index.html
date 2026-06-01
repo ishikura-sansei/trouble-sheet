@@ -6,325 +6,326 @@
 <title>SANSEI トラブルシート</title>
 <style>
 /* ============================================================
-   RESET & BASE
+RESET & BASE
 ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { font-size: 14px; -webkit-text-size-adjust: 100%; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
-  background: #f1f5f9;
-  color: #1e293b;
-  min-height: 100vh;
-  padding-bottom: 80px;
+font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+background: #f1f5f9;
+color: #1e293b;
+min-height: 100vh;
+padding-bottom: 80px;
 }
 button { cursor: pointer; border: none; background: none; font: inherit; }
 input, select, textarea { font: inherit; }
 
 /* ============================================================
-   STATUS COLORS
+STATUS COLORS
 ============================================================ */
 :root {
-  --clr-open: #ef4444;     /* 未解決 */
-  --clr-progress: #f59e0b; /* 対応中 */
-  --clr-done: #22c55e;     /* 解決済 */
-  --clr-border: #e2e8f0;
-  --clr-surface: #ffffff;
-  --clr-muted: #94a3b8;
-  --clr-primary: #1e40af;
+--clr-open: #ef4444; /* 未解決 */
+--clr-progress: #f59e0b; /* 対応中 */
+--clr-done: #22c55e; /* 解決済 */
+--clr-border: #e2e8f0;
+--clr-surface: #ffffff;
+--clr-muted: #94a3b8;
+--clr-primary: #1e40af;
 }
 
 /* ============================================================
-   HEADER
+HEADER
 ============================================================ */
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: #ffffff;
-  border-bottom: 1px solid var(--clr-border);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+position: sticky;
+top: 0;
+z-index: 100;
+background: #ffffff;
+border-bottom: 1px solid var(--clr-border);
+padding: 12px 16px;
+display: flex;
+align-items: center;
+gap: 10px;
 }
 .header-title {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #0f172a;
-  flex: 1;
+font-size: 1rem;
+font-weight: 700;
+color: #0f172a;
+flex: 1;
 }
 .header-count {
-  font-size: 0.75rem;
-  color: var(--clr-muted);
-  background: #f1f5f9;
-  padding: 2px 8px;
-  border-radius: 10px;
+font-size: 0.75rem;
+color: var(--clr-muted);
+background: #f1f5f9;
+padding: 2px 8px;
+border-radius: 10px;
 }
 .header-icon {
-  display: flex; align-items: center; justify-content: center;
-  width: 32px; height: 32px;
-  background: var(--clr-primary);
-  border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+width: 32px; height: 32px;
+background: var(--clr-primary);
+border-radius: 8px;
 }
 .header-icon svg { color: #fff; }
 
 /* ============================================================
-   FILTER BAR
+FILTER BAR
 ============================================================ */
 .filter-bar {
-  background: #fff;
-  border-bottom: 1px solid var(--clr-border);
-  padding: 10px 16px;
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+background: #fff;
+border-bottom: 1px solid var(--clr-border);
+padding: 10px 16px;
+display: flex;
+gap: 8px;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+scrollbar-width: none;
 }
 .filter-bar::-webkit-scrollbar { display: none; }
 .filter-chip {
-  flex-shrink: 0;
-  display: flex; align-items: center; gap: 4px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  border: 1.5px solid var(--clr-border);
-  color: #475569;
-  background: #fff;
-  white-space: nowrap;
-  transition: all .15s;
+flex-shrink: 0;
+display: flex; align-items: center; gap: 4px;
+padding: 5px 12px;
+border-radius: 20px;
+font-size: 0.78rem;
+font-weight: 500;
+border: 1.5px solid var(--clr-border);
+color: #475569;
+background: #fff;
+white-space: nowrap;
+transition: all .15s;
 }
 .filter-chip.active {
-  background: var(--clr-primary);
-  border-color: var(--clr-primary);
-  color: #fff;
+background: var(--clr-primary);
+border-color: var(--clr-primary);
+color: #fff;
 }
 .filter-chip .dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: currentColor;
+width: 6px; height: 6px;
+border-radius: 50%;
+background: currentColor;
 }
 
 /* ============================================================
-   GROUP TABS
+GROUP TABS
 ============================================================ */
 .group-tabs {
-  background: #f8fafc;
-  border-bottom: 1px solid var(--clr-border);
-  padding: 0 16px;
-  display: flex;
-  gap: 0;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+background: #f8fafc;
+border-bottom: 1px solid var(--clr-border);
+padding: 0 16px;
+display: flex;
+gap: 0;
+overflow-x: auto;
+-webkit-overflow-scrolling: touch;
+scrollbar-width: none;
 }
 .group-tabs::-webkit-scrollbar { display: none; }
 .group-tab {
-  flex-shrink: 0;
-  padding: 10px 14px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--clr-muted);
-  border-bottom: 2px solid transparent;
-  transition: all .15s;
+flex-shrink: 0;
+padding: 10px 14px;
+font-size: 0.78rem;
+font-weight: 600;
+color: var(--clr-muted);
+border-bottom: 2px solid transparent;
+transition: all .15s;
 }
 .group-tab.active {
-  color: var(--clr-primary);
-  border-bottom-color: var(--clr-primary);
+color: var(--clr-primary);
+border-bottom-color: var(--clr-primary);
 }
 
 /* ============================================================
-   MAIN LIST
+MAIN LIST
 ============================================================ */
 .main {
-  padding: 12px 12px 0;
+padding: 12px 12px 0;
 }
 .group-section { margin-bottom: 20px; }
 .group-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  color: var(--clr-muted);
-  padding: 0 4px 6px;
+font-size: 0.72rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: .04em;
+color: var(--clr-muted);
+padding: 0 4px 6px;
 }
 .cards { display: flex; flex-direction: column; gap: 6px; }
 
 /* ============================================================
-   CARD
+CARD
 ============================================================ */
 .card {
-  background: var(--clr-surface);
-  border: 1px solid var(--clr-border);
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  transition: box-shadow .15s;
+background: var(--clr-surface);
+border: 1px solid var(--clr-border);
+border-radius: 10px;
+overflow: hidden;
+display: flex;
+transition: box-shadow .15s;
 }
 .card:active { box-shadow: 0 0 0 2px #93c5fd; }
 .card-bar {
-  width: 4px;
-  flex-shrink: 0;
+width: 4px;
+flex-shrink: 0;
 }
 .card-bar.open { background: var(--clr-open); }
 .card-bar.progress { background: var(--clr-progress); }
 .card-bar.done { background: var(--clr-done); }
 .card-body {
-  flex: 1;
-  padding: 10px 12px;
-  min-width: 0;
+flex: 1;
+padding: 10px 12px;
+min-width: 0;
 }
 .card-row1 {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-bottom: 5px;
+display: flex;
+align-items: flex-start;
+gap: 6px;
+margin-bottom: 5px;
 }
 .card-title {
-  flex: 1;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #0f172a;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+flex: 1;
+font-size: 0.85rem;
+font-weight: 600;
+color: #0f172a;
+line-height: 1.4;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
 }
 .card-date {
-  font-size: 0.7rem;
-  color: var(--clr-muted);
-  flex-shrink: 0;
+font-size: 0.7rem;
+color: var(--clr-muted);
+flex-shrink: 0;
 }
 .card-detail {
-  font-size: 0.78rem;
-  color: #475569;
-  line-height: 1.4;
-  margin-bottom: 7px;
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+font-size: 0.78rem;
+color: #475569;
+line-height: 1.4;
+margin-bottom: 7px;
+overflow: hidden;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
 }
 .card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+display: flex;
+flex-wrap: wrap;
+gap: 4px;
 }
 .tag {
-  font-size: 0.68rem;
-  font-weight: 600;
-  padding: 2px 7px;
-  border-radius: 4px;
-  border: 1px solid transparent;
+font-size: 0.68rem;
+font-weight: 600;
+padding: 2px 7px;
+border-radius: 4px;
+border: 1px solid transparent;
 }
-.tag-status-open     { color: var(--clr-open);   background: #fef2f2; border-color: #fecaca; }
-.tag-status-progress { color: #b45309;            background: #fffbeb; border-color: #fde68a; }
-.tag-status-done     { color: #15803d;            background: #f0fdf4; border-color: #bbf7d0; }
-.tag-client  { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
-.tag-type    { color: #5b21b6; background: #f5f3ff; border-color: #ddd6fe; }
-.tag-person  { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
+.tag-status-open { color: var(--clr-open); background: #fef2f2; border-color: #fecaca; }
+.tag-status-progress { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+.tag-status-done { color: #15803d; background: #f0fdf4; border-color: #bbf7d0; }
+.tag-client { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; }
+.tag-type { color: #5b21b6; background: #f5f3ff; border-color: #ddd6fe; }
+.tag-person { color: #475569; background: #f8fafc; border-color: #e2e8f0; }
+.tag-memo { color: #0369a1; background: #e0f2fe; border-color: #7dd3fc; }
 .card-empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--clr-muted);
-  font-size: 0.82rem;
+text-align: center;
+padding: 40px 20px;
+color: var(--clr-muted);
+font-size: 0.82rem;
 }
 
 /* ============================================================
-   FAB
+FAB
 ============================================================ */
 .fab {
-  position: fixed;
-  bottom: 20px; right: 20px;
-  z-index: 200;
-  width: 52px; height: 52px;
-  border-radius: 50%;
-  background: var(--clr-primary);
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 4px 12px rgba(30,64,175,.4);
-  transition: transform .15s, box-shadow .15s;
+position: fixed;
+bottom: 20px; right: 20px;
+z-index: 200;
+width: 52px; height: 52px;
+border-radius: 50%;
+background: var(--clr-primary);
+color: #fff;
+display: flex; align-items: center; justify-content: center;
+box-shadow: 0 4px 12px rgba(30,64,175,.4);
+transition: transform .15s, box-shadow .15s;
 }
 .fab:active { transform: scale(.94); box-shadow: 0 2px 6px rgba(30,64,175,.3); }
 
 /* ============================================================
-   BOTTOM SHEET OVERLAY
+BOTTOM SHEET OVERLAY
 ============================================================ */
 .overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.45);
-  z-index: 300;
+display: none;
+position: fixed; inset: 0;
+background: rgba(0,0,0,.45);
+z-index: 300;
 }
 .overlay.show { display: block; }
 
 /* ============================================================
-   BOTTOM SHEET
+BOTTOM SHEET
 ============================================================ */
 .sheet {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 400;
-  background: #fff;
-  border-radius: 16px 16px 0 0;
-  padding: 0 0 env(safe-area-inset-bottom, 0);
-  max-height: 92vh;
-  overflow-y: auto;
-  transform: translateY(100%);
-  transition: transform .28s cubic-bezier(.32,.72,0,1);
-  -webkit-overflow-scrolling: touch;
+position: fixed;
+bottom: 0; left: 0; right: 0;
+z-index: 400;
+background: #fff;
+border-radius: 16px 16px 0 0;
+padding: 0 0 env(safe-area-inset-bottom, 0);
+max-height: 92vh;
+overflow-y: auto;
+transform: translateY(100%);
+transition: transform .28s cubic-bezier(.32,.72,0,1);
+-webkit-overflow-scrolling: touch;
 }
 .sheet.show { transform: translateY(0); }
 .sheet-handle {
-  width: 36px; height: 4px;
-  background: #e2e8f0;
-  border-radius: 2px;
-  margin: 10px auto 0;
+width: 36px; height: 4px;
+background: #e2e8f0;
+border-radius: 2px;
+margin: 10px auto 0;
 }
 .sheet-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px 12px;
-  border-bottom: 1px solid var(--clr-border);
+display: flex; align-items: center; justify-content: space-between;
+padding: 14px 16px 12px;
+border-bottom: 1px solid var(--clr-border);
 }
 .sheet-title {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #0f172a;
+font-size: 0.92rem;
+font-weight: 700;
+color: #0f172a;
 }
 .sheet-close {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: #f1f5f9;
-  display: flex; align-items: center; justify-content: center;
-  color: #64748b;
+width: 28px; height: 28px;
+border-radius: 50%;
+background: #f1f5f9;
+display: flex; align-items: center; justify-content: center;
+color: #64748b;
 }
 .sheet-body { padding: 16px; }
 
 /* ============================================================
-   FORM
+FORM
 ============================================================ */
 .form-row { margin-bottom: 14px; }
 .form-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #64748b;
-  margin-bottom: 5px;
-  text-transform: uppercase;
-  letter-spacing: .03em;
+display: block;
+font-size: 0.75rem;
+font-weight: 700;
+color: #64748b;
+margin-bottom: 5px;
+text-transform: uppercase;
+letter-spacing: .03em;
 }
 .form-input, .form-select, .form-textarea {
-  width: 100%;
-  padding: 9px 12px;
-  border: 1.5px solid var(--clr-border);
-  border-radius: 8px;
-  font-size: 0.85rem;
-  color: #0f172a;
-  background: #fff;
-  outline: none;
-  transition: border-color .15s;
-  -webkit-appearance: none;
+width: 100%;
+padding: 9px 12px;
+border: 1.5px solid var(--clr-border);
+border-radius: 8px;
+font-size: 0.85rem;
+color: #0f172a;
+background: #fff;
+outline: none;
+transition: border-color .15s;
+-webkit-appearance: none;
 }
 .form-input:focus,
 .form-select:focus,
@@ -332,78 +333,79 @@ input, select, textarea { font: inherit; }
 .form-textarea { min-height: 80px; resize: vertical; line-height: 1.5; }
 .form-row-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .form-submit {
-  width: 100%;
-  padding: 12px;
-  background: var(--clr-primary);
-  color: #fff;
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-top: 6px;
-  transition: opacity .15s;
+width: 100%;
+padding: 12px;
+background: var(--clr-primary);
+color: #fff;
+border-radius: 10px;
+font-size: 0.9rem;
+font-weight: 700;
+margin-top: 6px;
+transition: opacity .15s;
 }
 .form-submit:active { opacity: .85; }
 
 /* ============================================================
-   DETAIL SHEET
+DETAIL SHEET
 ============================================================ */
 .detail-section {
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--clr-border);
+padding: 14px 16px 10px;
+border-bottom: 1px solid var(--clr-border);
 }
 .detail-section:last-child { border-bottom: none; }
 .detail-key {
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--clr-muted);
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  margin-bottom: 4px;
+font-size: 0.72rem;
+font-weight: 700;
+color: var(--clr-muted);
+text-transform: uppercase;
+letter-spacing: .04em;
+margin-bottom: 4px;
 }
 .detail-value {
-  font-size: 0.88rem;
-  color: #0f172a;
-  line-height: 1.55;
+font-size: 0.88rem;
+color: #0f172a;
+line-height: 1.55;
 }
 .detail-meta {
-  display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
+display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
 }
 .detail-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 14px 16px;
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+padding: 14px 16px;
 }
-.btn-resolve, .btn-delete, .btn-progress, .btn-reopen {
-  flex: 1 1 calc(50% - 4px);
-  padding: 10px;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-align: center;
-  border: 1.5px solid;
+.btn-resolve, .btn-delete, .btn-progress, .btn-reopen, .btn-save-memo {
+flex: 1 1 calc(50% - 4px);
+padding: 10px;
+border-radius: 8px;
+font-size: 0.82rem;
+font-weight: 700;
+text-align: center;
+border: 1.5px solid;
 }
-.btn-resolve  { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
-.btn-delete   { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+.btn-resolve { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.btn-delete { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
 .btn-progress { background: #fffbeb; color: #b45309; border-color: #fde68a; }
-.btn-reopen   { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+.btn-reopen { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
+.btn-save-memo { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
 
 /* ============================================================
-   LOADING / SYNC
+LOADING / SYNC
 ============================================================ */
 .sync-bar {
-  display: none;
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--clr-primary) 0%, #60a5fa 100%);
-  z-index: 999;
-  animation: syncAnim 1.2s infinite;
+display: none;
+position: fixed;
+top: 0; left: 0; right: 0;
+height: 3px;
+background: linear-gradient(90deg, var(--clr-primary) 0%, #60a5fa 100%);
+z-index: 999;
+animation: syncAnim 1.2s infinite;
 }
 @keyframes syncAnim {
-  0%   { opacity: 1; }
-  50%  { opacity: .5; }
-  100% { opacity: 1; }
+0% { opacity: 1; }
+50% { opacity: .5; }
+100% { opacity: 1; }
 }
 </style>
 </head>
@@ -413,54 +415,54 @@ input, select, textarea { font: inherit; }
 
 <!-- HEADER -->
 <header class="header">
-  <div class="header-icon">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-      <polyline points="14 2 14 8 20 8"/>
-      <line x1="16" y1="13" x2="8" y2="13"/>
-      <line x1="16" y1="17" x2="8" y2="17"/>
-      <polyline points="10 9 9 9 8 9"/>
-    </svg>
-  </div>
-  <span class="header-title">トラブル / 依頼シート</span>
-  <span class="header-count" id="headerCount">0件</span>
+<div class="header-icon">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+<polyline points="14 2 14 8 20 8"/>
+<line x1="16" y1="13" x2="8" y2="13"/>
+<line x1="16" y1="17" x2="8" y2="17"/>
+<polyline points="10 9 9 9 8 9"/>
+</svg>
+</div>
+<span class="header-title">トラブル / 依頼シート</span>
+<span class="header-count" id="headerCount">0件</span>
 </header>
 
 <!-- FILTER BAR -->
 <div class="filter-bar" id="filterBar">
-  <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">
-    <span>すべて</span>
-  </button>
-  <button class="filter-chip" data-filter="open" onclick="setFilter('open')">
-    <span class="dot" style="background:var(--clr-open)"></span>
-    <span>未解決</span>
-  </button>
-  <button class="filter-chip" data-filter="progress" onclick="setFilter('progress')">
-    <span class="dot" style="background:var(--clr-progress)"></span>
-    <span>対応中</span>
-  </button>
-  <button class="filter-chip" data-filter="done" onclick="setFilter('done')">
-    <span class="dot" style="background:var(--clr-done)"></span>
-    <span>解決済</span>
-  </button>
-  <button class="filter-chip" data-filter="株式会社ATEL" onclick="setFilter('株式会社ATEL')">ATEL</button>
-  <button class="filter-chip" data-filter="リケンエナジー有限会社" onclick="setFilter('リケンエナジー有限会社')">リケン</button>
-  <button class="filter-chip" data-filter="株式会社キョウエイ" onclick="setFilter('株式会社キョウエイ')">キョウエイ</button>
-  <button class="filter-chip" data-filter="ライズ" onclick="setFilter('ライズ')">ライズ</button>
-  <button class="filter-chip" data-filter="外注先" onclick="setFilter('外注先')">外注先</button>
-  <button class="filter-chip" data-filter="外注職人" onclick="setFilter('外注職人')">外注職人</button>
-  <button class="filter-chip" data-filter="株式会社individual" onclick="setFilter('株式会社individual')">individual</button>
-  <button class="filter-chip" data-filter="株式会社Alpha Electro" onclick="setFilter('株式会社Alpha Electro')">Alpha Electro</button>
+<button class="filter-chip active" data-filter="all" onclick="setFilter('all')">
+<span>すべて</span>
+</button>
+<button class="filter-chip" data-filter="open" onclick="setFilter('open')">
+<span class="dot" style="background:var(--clr-open)"></span>
+<span>未解決</span>
+</button>
+<button class="filter-chip" data-filter="progress" onclick="setFilter('progress')">
+<span class="dot" style="background:var(--clr-progress)"></span>
+<span>対応中</span>
+</button>
+<button class="filter-chip" data-filter="done" onclick="setFilter('done')">
+<span class="dot" style="background:var(--clr-done)"></span>
+<span>解決済</span>
+</button>
+<button class="filter-chip" data-filter="株式会社ATEL" onclick="setFilter('株式会社ATEL')">ATEL</button>
+<button class="filter-chip" data-filter="リケンエナジー有限会社" onclick="setFilter('リケンエナジー有限会社')">リケン</button>
+<button class="filter-chip" data-filter="株式会社キョウエイ" onclick="setFilter('株式会社キョウエイ')">キョウエイ</button>
+<button class="filter-chip" data-filter="ライズ" onclick="setFilter('ライズ')">ライズ</button>
+<button class="filter-chip" data-filter="外注先" onclick="setFilter('外注先')">外注先</button>
+<button class="filter-chip" data-filter="外注職人" onclick="setFilter('外注職人')">外注職人</button>
+<button class="filter-chip" data-filter="株式会社individual" onclick="setFilter('株式会社individual')">individual</button>
+<button class="filter-chip" data-filter="株式会社Alpha Electro" onclick="setFilter('株式会社Alpha Electro')">Alpha Electro</button>
 </div>
 
 <!-- GROUP TABS -->
 <div class="group-tabs" id="groupTabs">
-  <button class="group-tab active" data-group="status"      onclick="setGroup('status')">状態別</button>
-  <button class="group-tab"        data-group="salesPerson" onclick="setGroup('salesPerson')">営業担当者別</button>
-  <button class="group-tab"        data-group="assignee"    onclick="setGroup('assignee')">担当者別</button>
-  <button class="group-tab"        data-group="client"      onclick="setGroup('client')">元請別</button>
-  <button class="group-tab"        data-group="type"        onclick="setGroup('type')">種類別</button>
-  <button class="group-tab"        data-group="none"        onclick="setGroup('none')">一覧</button>
+<button class="group-tab active" data-group="status" onclick="setGroup('status')">状態別</button>
+<button class="group-tab" data-group="salesPerson" onclick="setGroup('salesPerson')">営業担当者別</button>
+<button class="group-tab" data-group="assignee" onclick="setGroup('assignee')">担当者別</button>
+<button class="group-tab" data-group="client" onclick="setGroup('client')">元請別</button>
+<button class="group-tab" data-group="type" onclick="setGroup('type')">種類別</button>
+<button class="group-tab" data-group="none" onclick="setGroup('none')">一覧</button>
 </div>
 
 <!-- MAIN LIST -->
@@ -468,10 +470,10 @@ input, select, textarea { font: inherit; }
 
 <!-- FAB -->
 <button class="fab" onclick="openAdd()" aria-label="追加">
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-    <line x1="12" y1="5" x2="12" y2="19"/>
-    <line x1="5"  y1="12" x2="19" y2="12"/>
-  </svg>
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+<line x1="12" y1="5" x2="12" y2="19"/>
+<line x1="5" y1="12" x2="19" y2="12"/>
+</svg>
 </button>
 
 <!-- OVERLAY -->
@@ -479,429 +481,466 @@ input, select, textarea { font: inherit; }
 
 <!-- ADD SHEET -->
 <div class="sheet" id="addSheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title">新規登録</span>
-    <button class="sheet-close" onclick="closeAll()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6"  x2="6"  y2="18"/>
-        <line x1="6"  y1="6"  x2="18" y2="18"/>
-      </svg>
-    </button>
-  </div>
-  <div class="sheet-body">
+<div class="sheet-handle"></div>
+<div class="sheet-header">
+<span class="sheet-title">新規登録</span>
+<button class="sheet-close" onclick="closeAll()">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+<line x1="18" y1="6" x2="6" y2="18"/>
+<line x1="6" y1="6" x2="18" y2="18"/>
+</svg>
+</button>
+</div>
+<div class="sheet-body">
 
-    <div class="form-row-2col">
-      <div class="form-row">
-        <label class="form-label">発生日</label>
-        <input type="date" class="form-input" id="fDate">
-      </div>
-      <div class="form-row">
-        <label class="form-label">状態</label>
-        <select class="form-select" id="fStatus">
-          <option value="open">未解決</option>
-          <option value="progress">対応中</option>
-          <option value="done">解決済</option>
-        </select>
-      </div>
-    </div>
+<div class="form-row-2col">
+<div class="form-row">
+<label class="form-label">発生日</label>
+<input type="date" class="form-input" id="fDate">
+</div>
+<div class="form-row">
+<label class="form-label">状態</label>
+<select class="form-select" id="fStatus" onchange="toggleResolutionRow(this.value)">
+<option value="open">未解決</option>
+<option value="progress">対応中</option>
+<option value="done">解決済</option>
+</select>
+</div>
+</div>
 
-    <div class="form-row">
-      <label class="form-label">元請（取引先）</label>
-      <select class="form-select" id="fClient">
-        <option value="株式会社ATEL">株式会社ATEL</option>
-        <option value="リケンエナジー有限会社">リケンエナジー有限会社</option>
-        <option value="株式会社キョウエイ">株式会社キョウエイ</option>
-        <option value="ライズ">ライズ</option>
-        <option value="外注先">外注先</option>
-        <option value="外注職人">外注職人</option>
-        <option value="株式会社individual">株式会社individual</option>
-        <option value="株式会社Alpha Electro">株式会社Alpha Electro</option>
-        <option value="その他">その他</option>
-      </select>
-    </div>
+<div class="form-row">
+<label class="form-label">元請（取引先）</label>
+<select class="form-select" id="fClient">
+<option value="株式会社ATEL">株式会社ATEL</option>
+<option value="リケンエナジー有限会社">リケンエナジー有限会社</option>
+<option value="株式会社キョウエイ">株式会社キョウエイ</option>
+<option value="ライズ">ライズ</option>
+<option value="外注先">外注先</option>
+<option value="外注職人">外注職人</option>
+<option value="株式会社individual">株式会社individual</option>
+<option value="株式会社Alpha Electro">株式会社Alpha Electro</option>
+<option value="その他">その他</option>
+</select>
+</div>
 
-    <div class="form-row">
-      <label class="form-label">現場名・案件名</label>
-      <input type="text" class="form-input" id="fSite" placeholder="例：〇〇マンション 電気工事">
-    </div>
+<div class="form-row">
+<label class="form-label">現場名・案件名</label>
+<input type="text" class="form-input" id="fSite" placeholder="例：〇〇マンション 電気工事">
+</div>
 
-    <div class="form-row">
-      <label class="form-label">種類</label>
-      <select class="form-select" id="fType">
-        <optgroup label="現場系">
-          <option value="工事トラブル">工事トラブル</option>
-          <option value="機材・材料">機材・材料</option>
-          <option value="安全・事故">安全・事故</option>
-          <option value="クレーム">クレーム</option>
-        </optgroup>
-        <optgroup label="事務系">
-          <option value="引継ぎ">引継ぎ</option>
-          <option value="依頼・対応">依頼・対応</option>
-          <option value="書類作成・送付">書類作成・送付</option>
-          <option value="取引先連絡">取引先連絡</option>
-          <option value="社内調整">社内調整</option>
-          <option value="その他">その他</option>
-        </optgroup>
-      </select>
-    </div>
+<div class="form-row">
+<label class="form-label">種類</label>
+<select class="form-select" id="fType">
+<optgroup label="現場系">
+<option value="工事トラブル">工事トラブル</option>
+<option value="機材・材料">機材・材料</option>
+<option value="安全・事故">安全・事故</option>
+<option value="クレーム">クレーム</option>
+</optgroup>
+<optgroup label="事務系">
+<option value="引継ぎ">引継ぎ</option>
+<option value="依頼・対応">依頼・対応</option>
+<option value="書類作成・送付">書類作成・送付</option>
+<option value="取引先連絡">取引先連絡</option>
+<option value="社内調整">社内調整</option>
+<option value="その他">その他</option>
+</optgroup>
+</select>
+</div>
 
-    <div class="form-row">
-      <label class="form-label">状況詳細</label>
-      <textarea class="form-textarea" id="fDetail" placeholder="状況をできるだけ具体的に記入"></textarea>
-    </div>
+<div class="form-row">
+<label class="form-label">状況詳細</label>
+<textarea class="form-textarea" id="fDetail" placeholder="状況をできるだけ具体的に記入"></textarea>
+</div>
 
-    <div class="form-row-2col">
-      <div class="form-row">
-        <label class="form-label">営業担当者</label>
-        <input type="text" class="form-input" id="fSalesPerson" placeholder="担当者名">
-      </div>
-      <div class="form-row">
-        <label class="form-label">報告者</label>
-        <select class="form-select" id="fReporter">
-          <option value="石倉">石倉</option>
-          <option value="山中">山中</option>
-          <option value="今井">今井</option>
-        </select>
-      </div>
-    </div>
+<!-- 対応・解決メモ（対応中・解決済のときのみ表示） -->
+<div class="form-row" id="fResolutionRow" style="display:none">
+<label class="form-label">対応・解決メモ</label>
+<textarea class="form-textarea" id="fResolution" placeholder="どう対応・解決したかを記入"></textarea>
+</div>
 
-    <div class="form-row">
-      <label class="form-label">担当者（依頼先）</label>
-      <select class="form-select" id="fAssignee">
-        <option value="">（なし）</option>
-        <option value="石倉">石倉</option>
-        <option value="山中">山中</option>
-        <option value="今井">今井</option>
-      </select>
-    </div>
+<div class="form-row-2col">
+<div class="form-row">
+<label class="form-label">営業担当者</label>
+<input type="text" class="form-input" id="fSalesPerson" placeholder="担当者名">
+</div>
+<div class="form-row">
+<label class="form-label">報告者</label>
+<select class="form-select" id="fReporter">
+<option value="石倉">石倉</option>
+<option value="山中">山中</option>
+<option value="今井">今井</option>
+</select>
+</div>
+</div>
 
-    <button class="form-submit" onclick="submitAdd()">登録する</button>
-  </div>
+<div class="form-row">
+<label class="form-label">担当者（依頼先）</label>
+<select class="form-select" id="fAssignee">
+<option value="">（なし）</option>
+<option value="石倉">石倉</option>
+<option value="山中">山中</option>
+<option value="今井">今井</option>
+</select>
+</div>
+
+<button class="form-submit" onclick="submitAdd()">登録する</button>
+</div>
 </div>
 
 <!-- DETAIL SHEET -->
 <div class="sheet" id="detailSheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <span class="sheet-title" id="dTitle">詳細</span>
-    <button class="sheet-close" onclick="closeAll()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-        <line x1="18" y1="6"  x2="6"  y2="18"/>
-        <line x1="6"  y1="6"  x2="18" y2="18"/>
-      </svg>
-    </button>
-  </div>
-  <div id="detailBody"></div>
+<div class="sheet-handle"></div>
+<div class="sheet-header">
+<span class="sheet-title" id="dTitle">詳細</span>
+<button class="sheet-close" onclick="closeAll()">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+<line x1="18" y1="6" x2="6" y2="18"/>
+<line x1="6" y1="6" x2="18" y2="18"/>
+</svg>
+</button>
+</div>
+<div id="detailBody"></div>
 </div>
 
 <script>
 /* ============================================================
-   CONFIG
+CONFIG
 ============================================================ */
 const GAS_URL = "https://script.google.com/macros/s/AKfycbz2qBIY28FEvOp7P0xOxBTbZPHiCwdXwtkFeu4WsI6r4rrc3gSVzKYNaZrvjl_deMTe/exec";
 
 /* ============================================================
-   STATE
+STATE
 ============================================================ */
 let items = [];
 let activeFilter = "all";
-let activeGroup  = "status";
-let detailId     = null;
+let activeGroup = "status";
+let detailId = null;
 
 /* ============================================================
-   STATUS CONFIG
+STATUS CONFIG
 ============================================================ */
 const STATUS = {
-  open:     { label: "未解決", barClass: "open",     tagClass: "tag-status-open"     },
-  progress: { label: "対応中", barClass: "progress", tagClass: "tag-status-progress" },
-  done:     { label: "解決済", barClass: "done",     tagClass: "tag-status-done"     },
+open: { label: "未解決", barClass: "open", tagClass: "tag-status-open" },
+progress: { label: "対応中", barClass: "progress", tagClass: "tag-status-progress" },
+done: { label: "解決済", barClass: "done", tagClass: "tag-status-done" },
 };
 
 /* ============================================================
-   STORAGE
+STORAGE
 ============================================================ */
 function save() {
-  try { localStorage.setItem("tsItems", JSON.stringify(items)); } catch(e) {}
+try { localStorage.setItem("tsItems", JSON.stringify(items)); } catch(e) {}
 }
 function load() {
-  try {
-    const raw = localStorage.getItem("tsItems");
-    if (raw) items = JSON.parse(raw);
-  } catch(e) {}
+try {
+const raw = localStorage.getItem("tsItems");
+if (raw) items = JSON.parse(raw);
+} catch(e) {}
 }
 
 /* ============================================================
-   GAS SYNC (optional)
+GAS SYNC (optional)
 ============================================================ */
 function showSync(v) {
-  document.getElementById("syncBar").style.display = v ? "block" : "none";
+document.getElementById("syncBar").style.display = v ? "block" : "none";
 }
 
 async function gasPost(payload) {
-  if (!GAS_URL) return null;
-  showSync(true);
-  try {
-    await fetch(GAS_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain" },
-      body: JSON.stringify(payload),
-    });
-  } catch(e) {}
-  showSync(false);
+if (!GAS_URL) return null;
+showSync(true);
+try {
+await fetch(GAS_URL, {
+method: "POST",
+mode: "no-cors",
+headers: { "Content-Type": "text/plain" },
+body: JSON.stringify(payload),
+});
+} catch(e) {}
+showSync(false);
 }
 
 function gasGet() {
-  if (!GAS_URL) return Promise.resolve();
-  showSync(true);
-  return new Promise((resolve) => {
-    const cbName = "_gascb_" + Date.now();
-    const script = document.createElement("script");
-    const cleanup = () => { try { document.head.removeChild(script); } catch(e){} delete window[cbName]; showSync(false); };
-    window[cbName] = function(data) {
-      cleanup();
-      if (data && data.items) {
-        // id を必ず文字列に正規化（GASから数値で来る場合の型不一致を防ぐ）
-        items = data.items.map(i => ({...i, id: String(i.id)}));
-        save(); render();
-      }
-      resolve();
-    };
-    script.onerror = () => { cleanup(); resolve(); };
-    script.src = GAS_URL + "?action=list&callback=" + cbName;
-    document.head.appendChild(script);
-    setTimeout(() => { cleanup(); resolve(); }, 10000);
-  });
+if (!GAS_URL) return Promise.resolve();
+showSync(true);
+return new Promise((resolve) => {
+const cbName = "_gascb_" + Date.now();
+const script = document.createElement("script");
+const cleanup = () => { try { document.head.removeChild(script); } catch(e){} delete window[cbName]; showSync(false); };
+window[cbName] = function(data) {
+cleanup();
+if (data && data.items) {
+// id を必ず文字列に正規化（GASから数値で来る場合の型不一致り防ぐ）
+items = data.items.map(i => ({...i, id: String(i.id)}));
+save(); render();
+}
+resolve();
+};
+script.onerror = () => { cleanup(); resolve(); };
+script.src = GAS_URL + "?action=list&callback=" + cbName;
+document.head.appendChild(script);
+setTimeout(() => { cleanup(); resolve(); }, 10000);
+});
 }
 
 /* ============================================================
-   RENDER
+RENDER
 ============================================================ */
 function getFiltered() {
-  return items.filter(item => {
-    if (activeFilter === "all")      return true;
-    if (activeFilter === "open")     return item.status === "open";
-    if (activeFilter === "progress") return item.status === "progress";
-    if (activeFilter === "done")     return item.status === "done";
-    return item.client === activeFilter;
-  });
+return items.filter(item => {
+if (activeFilter === "all") return true;
+if (activeFilter === "open") return item.status === "open";
+if (activeFilter === "progress") return item.status === "progress";
+if (activeFilter === "done") return item.status === "done";
+return item.client === activeFilter;
+});
 }
 
 function groupItems(list) {
-  if (activeGroup === "none") return [{ label: null, items: list }];
-  const groups = {};
-  const ORDER = {
-    status:      ["open", "progress", "done"],
-    assignee:    [],
-    salesPerson: [],
-    client:      ["株式会社ATEL","リケンエナジー有限会社","株式会社キョウエイ","ライズ","外注先","外注職人","株式会社individual","株式会社Alpha Electro","その他"],
-    type:        ["工事トラブル","機材・材料","安全・事故","クレーム","引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
-  };
-  list.forEach(item => {
-    let key = "";
-    if (activeGroup === "status")      key = item.status;
-    else if (activeGroup === "assignee")    key = item.assignee || "";
-    else if (activeGroup === "salesPerson") key = item.salesPerson || "";
-    else if (activeGroup === "client")      key = item.client;
-    else if (activeGroup === "type")        key = item.type;
-    if (!groups[key]) groups[key] = [];
-    groups[key].push(item);
-  });
-  const order  = ORDER[activeGroup] || [];
-  const sorted = [...order.filter(k => groups[k]), ...Object.keys(groups).filter(k => !order.includes(k))];
-  return sorted.map(key => ({
-    label: activeGroup === "status"      ? (STATUS[key]?.label || key)
-         : activeGroup === "salesPerson" ? (key || "営業担当者なし")
-         : (key || "担当者なし"),
-    items: groups[key],
-  }));
+if (activeGroup === "none") return [{ label: null, items: list }];
+const groups = {};
+const ORDER = {
+status: ["open", "progress", "done"],
+assignee: [],
+salesPerson: [],
+client: ["株式会社ATEL","リケンエナジー有限会社","株式会社キョウエイ","ライズ","外注先","外注職人","株式会社individual","株式会社Alpha Electro","その他"],
+type: ["工事トラブル","機材・材料","安全・事故","クレーム","引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
+};
+list.forEach(item => {
+let key = "";
+if (activeGroup === "status") key = item.status;
+else if (activeGroup === "assignee") key = item.assignee || "";
+else if (activeGroup === "salesPerson") key = item.salesPerson || "";
+else if (activeGroup === "client") key = item.client;
+else if (activeGroup === "type") key = item.type;
+if (!groups[key]) groups[key] = [];
+groups[key].push(item);
+});
+const order = ORDER[activeGroup] || [];
+const sorted = [...order.filter(k => groups[k]), ...Object.keys(groups).filter(k => !order.includes(k))];
+return sorted.map(key => ({
+label: activeGroup === "status" ? (STATUS[key]?.label || key)
+: activeGroup === "salesPerson" ? (key || "営業担当者なし")
+: (key || "担当者なし"),
+items: groups[key],
+}));
 }
 
 function cardHTML(item) {
-  const st = STATUS[item.status] || STATUS.open;
-  const tags = [
-    `<span class="tag ${st.tagClass}">${st.label}</span>`,
-    `<span class="tag tag-client">${item.client}</span>`,
-    `<span class="tag tag-type">${item.type}</span>`,
-    item.salesPerson ? `<span class="tag tag-person">${item.salesPerson}</span>` : "",
-    item.assignee    ? `<span class="tag tag-person">${item.assignee}</span>`    : "",
-  ].filter(Boolean).join("");
-  return `
-  <div class="card" onclick="openDetail('${item.id}')">
-    <div class="card-bar ${st.barClass}"></div>
-    <div class="card-body">
-      <div class="card-row1">
-        <div class="card-title">${esc(item.site || "（無題）")}</div>
-        <div class="card-date">${(item.date || "").substring(0, 10)}</div>
-      </div>
-      ${item.detail ? `<div class="card-detail">${esc(item.detail)}</div>` : ""}
-      <div class="card-tags">${tags}</div>
-    </div>
-  </div>`;
+const st = STATUS[item.status] || STATUS.open;
+const tags = [
+`<span class="tag ${st.tagClass}">${st.label}</span>`,
+`<span class="tag tag-client">${item.client}</span>`,
+`<span class="tag tag-type">${item.type}</span>`,
+item.salesPerson ? `<span class="tag tag-person">${item.salesPerson}</span>` : "",
+item.assignee ? `<span class="tag tag-person">${item.assignee}</span>` : "",
+item.resolution ? `<span class="tag tag-memo">メモあり</span>` : "",
+].filter(Boolean).join("");
+return `
+<div class="card" onclick="openDetail('${item.id}')">
+<div class="card-bar ${st.barClass}"></div>
+<div class="card-body">
+<div class="card-row1">
+<div class="card-title">${esc(item.site || "（無題）")}</div>
+<div class="card-date">${(item.date || "").substring(0, 10)}</div>
+</div>
+${item.detail ? `<div class="card-detail">${esc(item.detail)}</div>` : ""}
+<div class="card-tags">${tags}</div>
+</div>
+</div>`;
 }
 
 function render() {
-  const filtered = getFiltered();
-  document.getElementById("headerCount").textContent = filtered.length + "件";
-  const groups = groupItems(filtered);
-  const main   = document.getElementById("mainList");
-  if (filtered.length === 0) {
-    main.innerHTML = `<div class="card-empty">該当するデータがありません</div>`;
-    return;
-  }
-  main.innerHTML = groups.map(g => `
-  <div class="group-section">
-    ${g.label ? `<div class="group-label">${g.label}（${g.items.length}）</div>` : ""}
-    <div class="cards">${g.items.map(cardHTML).join("")}</div>
-  </div>`).join("");
+const filtered = getFiltered();
+document.getElementById("headerCount").textContent = filtered.length + "件";
+const groups = groupItems(filtered);
+const main = document.getElementById("mainList");
+if (filtered.length === 0) {
+main.innerHTML = `<div class="card-empty">該当するデータがありません</div>`;
+return;
+}
+main.innerHTML = groups.map(g => `
+<div class="group-section">
+${g.label ? `<div class="group-label">${g.label}（${g.items.length}）</div>` : ""}
+<div class="cards">${g.items.map(cardHTML).join("")}</div>
+</div>`).join("");
 }
 
 /* ============================================================
-   FILTER / GROUP
+FILTER / GROUP
 ============================================================ */
 function setFilter(f) {
-  activeFilter = f;
-  document.querySelectorAll("[data-filter]").forEach(el =>
-    el.classList.toggle("active", el.dataset.filter === f));
-  render();
+activeFilter = f;
+document.querySelectorAll("[data-filter]").forEach(el =>
+el.classList.toggle("active", el.dataset.filter === f));
+render();
 }
 function setGroup(g) {
-  activeGroup = g;
-  document.querySelectorAll("[data-group]").forEach(el =>
-    el.classList.toggle("active", el.dataset.group === g));
-  render();
+activeGroup = g;
+document.querySelectorAll("[data-group]").forEach(el =>
+el.classList.toggle("active", el.dataset.group === g));
+render();
 }
 
 /* ============================================================
-   ADD
+RESOLUTION ROW TOGGLE（追加フォーム用）
+============================================================ */
+function toggleResolutionRow(statusVal) {
+const row = document.getElementById("fResolutionRow");
+if (row) row.style.display = (statusVal === "progress" || statusVal === "done") ? "block" : "none";
+}
+
+/* ============================================================
+ADD
 ============================================================ */
 function openAdd() {
-  const today = new Date().toISOString().slice(0, 10);
-  document.getElementById("fDate").value        = today;
-  document.getElementById("fStatus").value      = "open";
-  document.getElementById("fClient").selectedIndex = 0;
-  document.getElementById("fSite").value        = "";
-  document.getElementById("fType").selectedIndex   = 0;
-  document.getElementById("fDetail").value      = "";
-  document.getElementById("fSalesPerson").value = "";
-  document.getElementById("fReporter").value    = "石倉";
-  document.getElementById("fAssignee").value    = "";
-  showSheet("addSheet");
+const today = new Date().toISOString().slice(0, 10);
+document.getElementById("fDate").value = today;
+document.getElementById("fStatus").value = "open";
+document.getElementById("fClient").selectedIndex = 0;
+document.getElementById("fSite").value = "";
+document.getElementById("fType").selectedIndex = 0;
+document.getElementById("fDetail").value = "";
+document.getElementById("fResolution").value = "";
+document.getElementById("fResolutionRow").style.display = "none";
+document.getElementById("fSalesPerson").value = "";
+document.getElementById("fReporter").value = "石倉";
+document.getElementById("fAssignee").value = "";
+showSheet("addSheet");
 }
 
 async function submitAdd() {
-  const item = {
-    id:          Date.now().toString(),
-    date:        document.getElementById("fDate").value,
-    status:      document.getElementById("fStatus").value,
-    client:      document.getElementById("fClient").value,
-    site:        document.getElementById("fSite").value.trim(),
-    type:        document.getElementById("fType").value,
-    detail:      document.getElementById("fDetail").value.trim(),
-    salesPerson: document.getElementById("fSalesPerson").value.trim(),
-    reporter:    document.getElementById("fReporter").value,
-    assignee:    document.getElementById("fAssignee").value,
-    createdAt:   new Date().toISOString(),
-  };
-  if (!item.site) { alert("現場名・案件名を入力してください"); return; }
-  items.unshift(item);
-  save();
-  closeAll();
-  render();
-  if (GAS_URL) await gasPost({ action: "add", item });
+const item = {
+id: Date.now().toString(),
+date: document.getElementById("fDate").value,
+status: document.getElementById("fStatus").value,
+client: document.getElementById("fClient").value,
+site: document.getElementById("fSite").value.trim(),
+type: document.getElementById("fType").value,
+detail: document.getElementById("fDetail").value.trim(),
+salesPerson: document.getElementById("fSalesPerson").value.trim(),
+reporter: document.getElementById("fReporter").value,
+assignee: document.getElementById("fAssignee").value,
+createdAt: new Date().toISOString(),
+resolution: document.getElementById("fResolution").value.trim(),
+};
+if (!item.site) { alert("現場名・案件名を入力してください"); return; }
+items.unshift(item);
+save();
+closeAll();
+render();
+if (GAS_URL) await gasPost({ action: "add", item });
 }
 
 /* ============================================================
-   DETAIL
+DETAIL
 ============================================================ */
 function openDetail(id) {
-  const item = items.find(i => i.id === id);
-  if (!item) return;
-  detailId = id;
-  const st = STATUS[item.status] || STATUS.open;
-  document.getElementById("dTitle").textContent = item.site || "詳細";
-  document.getElementById("detailBody").innerHTML = `
-  <div class="detail-section">
-    <div class="detail-meta">
-      <span class="tag ${st.tagClass}">${st.label}</span>
-      <span class="tag tag-client">${item.client}</span>
-      <span class="tag tag-type">${item.type}</span>
-    </div>
-  </div>
-  <div class="detail-section">
-    <div class="detail-key">現場名・案件名</div>
-    <div class="detail-value">${esc(item.site || "—")}</div>
-  </div>
-  <div class="detail-section">
-    <div class="detail-key">状況詳細</div>
-    <div class="detail-value">${esc(item.detail || "—").replace(/\n/g,"<br>")}</div>
-  </div>
-  <div class="detail-section">
-    <div class="detail-key">発生日</div>
-    <div class="detail-value">${(item.date || "—").substring(0, 10)}</div>
-  </div>
-  <div class="detail-section">
-    <div class="detail-key">営業担当者</div>
-    <div class="detail-value">${esc(item.salesPerson || "—")}</div>
-  </div>
-  <div class="detail-section">
-    <div class="detail-key">報告者 / 担当者</div>
-    <div class="detail-value">${esc(item.reporter || "—")} → ${esc(item.assignee || "（なし）")}</div>
-  </div>
-  <div class="detail-actions">
-    ${item.status === "open"     ? `<button class="btn-progress" onclick="changeStatus('progress')">対応中にする</button>` : ""}
-    ${item.status !== "done"     ? `<button class="btn-resolve"  onclick="changeStatus('done')">解決済にする</button>` : ""}
-    ${item.status === "done"     ? `<button class="btn-reopen"   onclick="changeStatus('open')">未解決に戻す</button>` : ""}
-    ${item.status === "progress" ? `<button class="btn-reopen"   onclick="changeStatus('open')">未解決に戻す</button>` : ""}
-    <button class="btn-delete" onclick="deleteItem()">削除</button>
-  </div>`;
-  showSheet("detailSheet");
+const item = items.find(i => i.id === id);
+if (!item) return;
+detailId = id;
+const st = STATUS[item.status] || STATUS.open;
+document.getElementById("dTitle").textContent = item.site || "詳細";
+document.getElementById("detailBody").innerHTML = `
+<div class="detail-section">
+<div class="detail-meta">
+<span class="tag ${st.tagClass}">${st.label}</span>
+<span class="tag tag-client">${item.client}</span>
+<span class="tag tag-type">${item.type}</span>
+</div>
+</div>
+<div class="detail-section">
+<div class="detail-key">現場名・案件名</div>
+<div class="detail-value">${esc(item.site || "—")}</div>
+</div>
+<div class="detail-section">
+<div class="detail-key">状況詳細</div>
+<div class="detail-value">${esc(item.detail || "—").replace(/\n/g,"<br>")}</div>
+</div>
+<div class="detail-section">
+<div class="detail-key">発生日</div>
+<div class="detail-value">${(item.date || "—").substring(0, 10)}</div>
+</div>
+<div class="detail-section">
+<div class="detail-key">営業担当者</div>
+<div class="detail-value">${esc(item.salesPerson || "—")}</div>
+</div>
+<div class="detail-section">
+<div class="detail-key">報告者 / 担当者</div>
+<div class="detail-value">${esc(item.reporter || "—")} → ${esc(item.assignee || "（なし）")}</div>
+</div>
+<div class="detail-section">
+<div class="detail-key">対応・解決メモ</div>
+<textarea class="form-textarea" id="dResolution" placeholder="どう対応・解決したかを記入">${esc(item.resolution || "")}</textarea>
+</div>
+<div class="detail-actions">
+${item.status === "open" ? `<button class="btn-progress" onclick="changeStatus('progress')">対応中にする</button>` : ""}
+${item.status !== "done" ? `<button class="btn-resolve" onclick="changeStatus('done')">解決済にする</button>` : ""}
+${item.status === "done" ? `<button class="btn-reopen" onclick="changeStatus('open')">未解決に戻す</button>` : ""}
+${item.status === "progress" ? `<button class="btn-reopen" onclick="changeStatus('progress')">未解決に戻す</button>` : ""}
+<button class="btn-save-memo" onclick="saveMemo()">メア保存</button>
+<button class="btn-delete" onclick="deleteItem()">削除</button>
+</div>`;
+showSheet("detailSheet");
 }
 
 async function changeStatus(newStatus) {
-  const item = items.find(i => i.id === detailId);
-  if (!item) return;
-  item.status = newStatus;
-  save();
-  closeAll();
-  render();
-  if (GAS_URL) await gasPost({ action: "update", id: item.id, status: newStatus });
+const item = items.find(i => i.id === detailId);
+if (!item) return;item.status = newStatus;
+const resEl = document.getElementById("dResolution");
+if (resEl && resEl.value.trim()) item.resolution = resEl.value.trim();
+save();
+closeAll();
+render();
+if (GAS_URL) await gasPost({ action: "update", id: item.id, status: newStatus, resolution: item.resolution || "" });
+}
+
+async function saveMemo() {
+const item = items.find(i => i.id === detailId);
+if (!item) return;
+const resEl = document.getElementById("dResolution");
+if (!resEl) return;
+item.resolution = resEl.value.trim();
+save();
+if (GAS_URL) await gasPost({ action: "update", id: item.id, status: item.status, resolution: item.resolution });
+// 保存完了フィードバック
+resEl.style.borderColor = "#22c55e";
+setTimeout(() => { resEl.style.borderColor = ""; }, 1200);
 }
 
 async function deleteItem() {
-  if (!confirm("このデータを削除しますか？")) return;
-  const id = detailId;
-  items = items.filter(i => i.id !== id);
-  save();
-  closeAll();
-  render();
-  if (GAS_URL) await gasPost({ action: "delete", id });
+if (!confirm("このデータを削除しますか？")) return;
+const id = detailId;
+items = items.filter(i => i.id !== id);
+save();
+closeAll();
+render();
+if (GAS_URL) await gasPost({ action: "delete", id });
 }
 
 /* ============================================================
-   SHEET
+SHEET
 ============================================================ */
 function showSheet(id) {
-  document.getElementById("overlay").classList.add("show");
-  document.getElementById(id).classList.add("show");
+document.getElementById("overlay").classList.add("show");
+document.getElementById(id).classList.add("show");
 }
 function closeAll() {
-  document.getElementById("overlay").classList.remove("show");
-  document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show"));
+document.getElementById("overlay").classList.remove("show");
+document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show"));
 }
 
 /* ============================================================
-   UTILS
+UTILS
 ============================================================ */
 function esc(s) {
-  return String(s)
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
+return String(s)
+.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;");
 }
 
 /* ============================================================
-   INIT
+INIT
 ============================================================ */
 load();
 render();
