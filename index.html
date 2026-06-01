@@ -369,41 +369,24 @@ input, select, textarea { font: inherit; }
   display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px;
 }
 .detail-actions {
-  display: grid; grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 14px 16px;
 }
-.btn-resolve {
+.btn-resolve, .btn-delete, .btn-progress, .btn-reopen {
+  flex: 1 1 calc(50% - 4px);
   padding: 10px;
-  background: #f0fdf4;
-  color: #15803d;
-  border: 1.5px solid #bbf7d0;
   border-radius: 8px;
   font-size: 0.82rem;
   font-weight: 700;
   text-align: center;
+  border: 1.5px solid;
 }
-.btn-delete {
-  padding: 10px;
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1.5px solid #fecaca;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-align: center;
-}
-.btn-progress {
-  padding: 10px;
-  background: #fffbeb;
-  color: #b45309;
-  border: 1.5px solid #fde68a;
-  border-radius: 8px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-align: center;
-  grid-column: span 2;
-}
+.btn-resolve  { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+.btn-delete   { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
+.btn-progress { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+.btn-reopen   { background: #f1f5f9; color: #475569; border-color: #cbd5e1; }
 
 /* ============================================================
    LOADING / SYNC
@@ -867,8 +850,10 @@ function openDetail(id) {
     <div class="detail-value">${esc(item.reporter || "—")} → ${esc(item.assignee || "（なし）")}</div>
   </div>
   <div class="detail-actions">
-    ${item.status !== "done"     ? `<button class="btn-resolve"  onclick="changeStatus('done')">解決済にする</button>` : ""}
     ${item.status === "open"     ? `<button class="btn-progress" onclick="changeStatus('progress')">対応中にする</button>` : ""}
+    ${item.status !== "done"     ? `<button class="btn-resolve"  onclick="changeStatus('done')">解決済にする</button>` : ""}
+    ${item.status === "done"     ? `<button class="btn-reopen"   onclick="changeStatus('open')">未解決に戻す</button>` : ""}
+    ${item.status === "progress" ? `<button class="btn-reopen"   onclick="changeStatus('open')">未解決に戻す</button>` : ""}
     <button class="btn-delete" onclick="deleteItem()">削除</button>
   </div>`;
   showSheet("detailSheet");
