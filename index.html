@@ -196,6 +196,14 @@ font-size: 0.7rem;
 color: var(--clr-muted);
 flex-shrink: 0;
 }
+.card-site {
+font-size: 0.72rem;
+color: #64748b;
+margin-bottom: 5px;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
 .card-detail {
 font-size: 0.78rem;
 color: #475569;
@@ -315,6 +323,7 @@ margin-bottom: 5px;
 text-transform: uppercase;
 letter-spacing: .03em;
 }
+.form-label .opt { color: var(--clr-muted); font-weight: 600; }
 .form-input, .form-select, .form-textarea {
 width: 100%;
 padding: 9px 12px;
@@ -375,7 +384,7 @@ flex-wrap: wrap;
 gap: 8px;
 padding: 14px 16px;
 }
-.btn-resolve, .btn-delete, .btn-progress, .btn-reopen, .btn-save-memo {
+.btn-edit, .btn-resolve, .btn-delete, .btn-progress, .btn-reopen, .btn-save-memo {
 flex: 1 1 calc(50% - 4px);
 padding: 10px;
 border-radius: 8px;
@@ -384,6 +393,7 @@ font-weight: 700;
 text-align: center;
 border: 1.5px solid;
 }
+.btn-edit { background: #eef2ff; color: #1e40af; border-color: #c7d2fe; flex-basis: 100%; }
 .btn-resolve { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
 .btn-delete { background: #fef2f2; color: #dc2626; border-color: #fecaca; }
 .btn-progress { background: #fffbeb; color: #b45309; border-color: #fde68a; }
@@ -459,7 +469,6 @@ animation: syncAnim 1.2s infinite;
 <!-- GROUP TABS -->
 <div class="group-tabs" id="groupTabs">
 <button class="group-tab active" data-group="status" onclick="setGroup('status')">状態別</button>
-<button class="group-tab" data-group="salesPerson" onclick="setGroup('salesPerson')">営業担当者別</button>
 <button class="group-tab" data-group="assignee" onclick="setGroup('assignee')">担当者別</button>
 <button class="group-tab" data-group="client" onclick="setGroup('client')">元請別</button>
 <button class="group-tab" data-group="type" onclick="setGroup('type')">種類別</button>
@@ -480,11 +489,11 @@ animation: syncAnim 1.2s infinite;
 <!-- OVERLAY -->
 <div class="overlay" id="overlay" onclick="closeAll()"></div>
 
-<!-- ADD SHEET -->
+<!-- ADD / EDIT SHEET -->
 <div class="sheet" id="addSheet">
 <div class="sheet-handle"></div>
 <div class="sheet-header">
-<span class="sheet-title">新規登録</span>
+<span class="sheet-title" id="addSheetTitle">新規登録</span>
 <button class="sheet-close" onclick="closeAll()">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
 <line x1="18" y1="6" x2="6" y2="18"/>
@@ -534,8 +543,13 @@ animation: syncAnim 1.2s infinite;
 </div>
 
 <div class="form-row">
-<label class="form-label">現場名・案件名</label>
-<input type="text" class="form-input" id="fSite" placeholder="例：〇〇マンション 電気工事">
+<label class="form-label">題名</label>
+<input type="text" class="form-input" id="fTitle" placeholder="例：分電盤の手配依頼 / 〇〇邸 配線トラブル">
+</div>
+
+<div class="form-row">
+<label class="form-label">現場名 <span class="opt">（任意）</span></label>
+<input type="text" class="form-input" id="fSite" placeholder="現場に関わる場合のみ。例：〇〇マンション">
 </div>
 
 <div class="form-row">
@@ -560,8 +574,8 @@ animation: syncAnim 1.2s infinite;
 </div>
 
 <div class="form-row">
-<label class="form-label">状況詳細</label>
-<textarea class="form-textarea" id="fDetail" placeholder="状況をできるだけ具体的に記入"></textarea>
+<label class="form-label">主内容</label>
+<textarea class="form-textarea" id="fDetail" placeholder="内容をできるだけ具体的に記入"></textarea>
 </div>
 
 <!-- 対応・解決メモ（対応中・解決済のときのみ表示） -->
@@ -572,10 +586,6 @@ animation: syncAnim 1.2s infinite;
 
 <div class="form-row-2col">
 <div class="form-row">
-<label class="form-label">営業担当者</label>
-<input type="text" class="form-input" id="fSalesPerson" placeholder="担当者名">
-</div>
-<div class="form-row">
 <label class="form-label">報告者</label>
 <select class="form-select" id="fReporter">
 <option value="石倉">石倉</option>
@@ -583,8 +593,6 @@ animation: syncAnim 1.2s infinite;
 <option value="今井">今井</option>
 </select>
 </div>
-</div>
-
 <div class="form-row">
 <label class="form-label">担当者（依頼先）</label>
 <select class="form-select" id="fAssignee">
@@ -594,8 +602,9 @@ animation: syncAnim 1.2s infinite;
 <option value="今井">今井</option>
 </select>
 </div>
+</div>
 
-<button class="form-submit" onclick="submitAdd()">登録する</button>
+<button class="form-submit" id="formSubmitBtn" onclick="submitForm()">登録する</button>
 </div>
 </div>
 
@@ -627,6 +636,7 @@ let items = [];
 let activeFilter = "all";
 let activeGroup = "status";
 let detailId = null;
+let editId = null; // 編集中のID（null=新規登録）
 
 /* ============================================================
 STATUS CONFIG
@@ -651,7 +661,7 @@ if (raw) items = JSON.parse(raw);
 }
 
 /* ============================================================
-GAS SYNC (optional)
+GAS SYNC
 ============================================================ */
 function showSync(v) {
 document.getElementById("syncBar").style.display = v ? "block" : "none";
@@ -681,7 +691,7 @@ const cleanup = () => { try { document.head.removeChild(script); } catch(e){} de
 window[cbName] = function(data) {
 cleanup();
 if (data && data.items) {
-// id を必ず文字列に正規化（GASから数値で来る場合の型不一致り防ぐ）
+// id を必ず文字列に正規化（GASから数値で来る場合の型不一致を防ぐ）
 items = data.items.map(i => ({...i, id: String(i.id)}));
 save(); render();
 }
@@ -713,7 +723,6 @@ const groups = {};
 const ORDER = {
 status: ["open", "progress", "done"],
 assignee: [],
-salesPerson: [],
 client: ["株式会社ATEL","リケンエナジー有限会社","株式会社キョウエイ","ライズ","外注先","外注職人","社内連絡","株式会社individual","株式会社Alpha Electro","その他"],
 type: ["工事案件詳細","工事トラブル","機材・材料","安全・事故","クレーム","引継ぎ","依頼・対応","書類作成・送付","取引先連絡","社内調整","その他"],
 };
@@ -721,7 +730,6 @@ list.forEach(item => {
 let key = "";
 if (activeGroup === "status") key = item.status;
 else if (activeGroup === "assignee") key = item.assignee || "";
-else if (activeGroup === "salesPerson") key = item.salesPerson || "";
 else if (activeGroup === "client") key = item.client;
 else if (activeGroup === "type") key = item.type;
 if (!groups[key]) groups[key] = [];
@@ -731,20 +739,23 @@ const order = ORDER[activeGroup] || [];
 const sorted = [...order.filter(k => groups[k]), ...Object.keys(groups).filter(k => !order.includes(k))];
 return sorted.map(key => ({
 label: activeGroup === "status" ? (STATUS[key]?.label || key)
-: activeGroup === "salesPerson" ? (key || "営業担当者なし")
 : (key || "担当者なし"),
 items: groups[key],
 }));
+}
+
+// 題名（旧データは現場名にフォールバック）
+function itemTitle(item) {
+return item.title || item.site || "（無題）";
 }
 
 function cardHTML(item) {
 const st = STATUS[item.status] || STATUS.open;
 const tags = [
 `<span class="tag ${st.tagClass}">${st.label}</span>`,
-`<span class="tag tag-client">${item.client}</span>`,
-`<span class="tag tag-type">${item.type}</span>`,
-item.salesPerson ? `<span class="tag tag-person">${item.salesPerson}</span>` : "",
-item.assignee ? `<span class="tag tag-person">${item.assignee}</span>` : "",
+`<span class="tag tag-client">${esc(item.client)}</span>`,
+`<span class="tag tag-type">${esc(item.type)}</span>`,
+item.assignee ? `<span class="tag tag-person">${esc(item.assignee)}</span>` : "",
 item.resolution ? `<span class="tag tag-memo">メモあり</span>` : "",
 ].filter(Boolean).join("");
 return `
@@ -752,9 +763,10 @@ return `
 <div class="card-bar ${st.barClass}"></div>
 <div class="card-body">
 <div class="card-row1">
-<div class="card-title">${esc(item.site || "（無題）")}</div>
+<div class="card-title">${esc(itemTitle(item))}</div>
 <div class="card-date">${(item.date || "").substring(0, 10)}</div>
 </div>
+${item.site ? `<div class="card-site">📍 ${esc(item.site)}</div>` : ""}
 ${item.detail ? `<div class="card-detail">${esc(item.detail)}</div>` : ""}
 <div class="card-tags">${tags}</div>
 </div>
@@ -794,7 +806,7 @@ render();
 }
 
 /* ============================================================
-RESOLUTION ROW TOGGLE（追加フォーム用）
+RESOLUTION ROW TOGGLE（フォーム用）
 ============================================================ */
 function toggleResolutionRow(statusVal) {
 const row = document.getElementById("fResolutionRow");
@@ -802,45 +814,88 @@ if (row) row.style.display = (statusVal === "progress" || statusVal === "done") 
 }
 
 /* ============================================================
-ADD
+ADD / EDIT （同じフォームを使い回す）
 ============================================================ */
 function openAdd() {
+editId = null;
+document.getElementById("addSheetTitle").textContent = "新規登録";
+document.getElementById("formSubmitBtn").textContent = "登録する";
 const today = new Date().toISOString().slice(0, 10);
 document.getElementById("fDate").value = today;
 document.getElementById("fStatus").value = "open";
 document.getElementById("fClient").selectedIndex = 0;
+document.getElementById("fTitle").value = "";
 document.getElementById("fSite").value = "";
 document.getElementById("fType").selectedIndex = 0;
 document.getElementById("fDetail").value = "";
 document.getElementById("fResolution").value = "";
 document.getElementById("fResolutionRow").style.display = "none";
-document.getElementById("fSalesPerson").value = "";
 document.getElementById("fReporter").value = "石倉";
 document.getElementById("fAssignee").value = "";
 showSheet("addSheet");
 }
 
-async function submitAdd() {
-const item = {
-id: Date.now().toString(),
+// 登録後の編集：既存データをフォームに流し込む
+function openEdit(id) {
+const item = items.find(i => i.id === id);
+if (!item) return;
+editId = id;
+document.getElementById("addSheetTitle").textContent = "編集";
+document.getElementById("formSubmitBtn").textContent = "保存する";
+document.getElementById("fDate").value = (item.date || "").substring(0, 10);
+document.getElementById("fStatus").value = item.status || "open";
+document.getElementById("fClient").value = item.client || "";
+document.getElementById("fTitle").value = item.title || item.site || "";
+document.getElementById("fSite").value = item.site || "";
+document.getElementById("fType").value = item.type || "";
+document.getElementById("fDetail").value = item.detail || "";
+document.getElementById("fResolution").value = item.resolution || "";
+toggleResolutionRow(item.status || "open");
+document.getElementById("fReporter").value = item.reporter || "石倉";
+document.getElementById("fAssignee").value = item.assignee || "";
+closeAll();
+showSheet("addSheet");
+}
+
+async function submitForm() {
+const fields = {
 date: document.getElementById("fDate").value,
 status: document.getElementById("fStatus").value,
 client: document.getElementById("fClient").value,
+title: document.getElementById("fTitle").value.trim(),
 site: document.getElementById("fSite").value.trim(),
 type: document.getElementById("fType").value,
 detail: document.getElementById("fDetail").value.trim(),
-salesPerson: document.getElementById("fSalesPerson").value.trim(),
 reporter: document.getElementById("fReporter").value,
 assignee: document.getElementById("fAssignee").value,
-createdAt: new Date().toISOString(),
 resolution: document.getElementById("fResolution").value.trim(),
 };
-if (!item.site) { alert("現場名・案件名を入力してください"); return; }
+if (!fields.title) { alert("題名を入力してください"); return; }
+
+if (editId) {
+// === 編集（既存を上書き） ===
+const idx = items.findIndex(i => i.id === editId);
+if (idx === -1) return;
+const updated = { ...items[idx], ...fields };
+items[idx] = updated;
+save();
+closeAll();
+render();
+if (GAS_URL) await gasPost({ action: "update", id: editId, item: updated });
+editId = null;
+} else {
+// === 新規登録 ===
+const item = {
+id: Date.now().toString(),
+...fields,
+createdAt: new Date().toISOString(),
+};
 items.unshift(item);
 save();
 closeAll();
 render();
 if (GAS_URL) await gasPost({ action: "add", item });
+}
 }
 
 /* ============================================================
@@ -851,30 +906,31 @@ const item = items.find(i => i.id === id);
 if (!item) return;
 detailId = id;
 const st = STATUS[item.status] || STATUS.open;
-document.getElementById("dTitle").textContent = item.site || "詳細";
+document.getElementById("dTitle").textContent = itemTitle(item);
 document.getElementById("detailBody").innerHTML = `
 <div class="detail-section">
 <div class="detail-meta">
 <span class="tag ${st.tagClass}">${st.label}</span>
-<span class="tag tag-client">${item.client}</span>
-<span class="tag tag-type">${item.type}</span>
+<span class="tag tag-client">${esc(item.client)}</span>
+<span class="tag tag-type">${esc(item.type)}</span>
 </div>
 </div>
 <div class="detail-section">
-<div class="detail-key">現場名・案件名</div>
-<div class="detail-value">${esc(item.site || "—")}</div>
+<div class="detail-key">題名</div>
+<div class="detail-value">${esc(itemTitle(item))}</div>
 </div>
+${item.site ? `
 <div class="detail-section">
-<div class="detail-key">状況詳細</div>
+<div class="detail-key">現場名</div>
+<div class="detail-value">${esc(item.site)}</div>
+</div>` : ""}
+<div class="detail-section">
+<div class="detail-key">主内容</div>
 <div class="detail-value">${esc(item.detail || "—").replace(/\n/g,"<br>")}</div>
 </div>
 <div class="detail-section">
 <div class="detail-key">発生日</div>
 <div class="detail-value">${(item.date || "—").substring(0, 10)}</div>
-</div>
-<div class="detail-section">
-<div class="detail-key">営業担当者</div>
-<div class="detail-value">${esc(item.salesPerson || "—")}</div>
 </div>
 <div class="detail-section">
 <div class="detail-key">報告者 / 担当者</div>
@@ -885,11 +941,12 @@ document.getElementById("detailBody").innerHTML = `
 <textarea class="form-textarea" id="dResolution" placeholder="どう対応・解決したかを記入">${esc(item.resolution || "")}</textarea>
 </div>
 <div class="detail-actions">
+<button class="btn-edit" onclick="openEdit('${item.id}')">✏️ 編集する</button>
 ${item.status === "open" ? `<button class="btn-progress" onclick="changeStatus('progress')">対応中にする</button>` : ""}
 ${item.status !== "done" ? `<button class="btn-resolve" onclick="changeStatus('done')">解決済にする</button>` : ""}
 ${item.status === "done" ? `<button class="btn-reopen" onclick="changeStatus('open')">未解決に戻す</button>` : ""}
-${item.status === "progress" ? `<button class="btn-reopen" onclick="changeStatus('progress')">未解決に戻す</button>` : ""}
-<button class="btn-save-memo" onclick="saveMemo()">メア保存</button>
+${item.status === "progress" ? `<button class="btn-reopen" onclick="changeStatus('open')">未解決に戻す</button>` : ""}
+<button class="btn-save-memo" onclick="saveMemo()">メモ保存</button>
 <button class="btn-delete" onclick="deleteItem()">削除</button>
 </div>`;
 showSheet("detailSheet");
@@ -897,13 +954,14 @@ showSheet("detailSheet");
 
 async function changeStatus(newStatus) {
 const item = items.find(i => i.id === detailId);
-if (!item) return;item.status = newStatus;
+if (!item) return;
+item.status = newStatus;
 const resEl = document.getElementById("dResolution");
 if (resEl && resEl.value.trim()) item.resolution = resEl.value.trim();
 save();
 closeAll();
 render();
-if (GAS_URL) await gasPost({ action: "update", id: item.id, status: newStatus, resolution: item.resolution || "" });
+if (GAS_URL) await gasPost({ action: "update", id: item.id, item });
 }
 
 async function saveMemo() {
@@ -913,7 +971,7 @@ const resEl = document.getElementById("dResolution");
 if (!resEl) return;
 item.resolution = resEl.value.trim();
 save();
-if (GAS_URL) await gasPost({ action: "update", id: item.id, status: item.status, resolution: item.resolution });
+if (GAS_URL) await gasPost({ action: "update", id: item.id, item });
 // 保存完了フィードバック
 resEl.style.borderColor = "#22c55e";
 setTimeout(() => { resEl.style.borderColor = ""; }, 1200);
@@ -945,7 +1003,7 @@ document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show"));
 UTILS
 ============================================================ */
 function esc(s) {
-return String(s)
+return String(s == null ? "" : s)
 .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
 .replace(/"/g,"&quot;");
 }
